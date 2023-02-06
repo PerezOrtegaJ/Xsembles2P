@@ -1,0 +1,2 @@
+# Xsembles2P
+**Xsembles2P** is a tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify xsembles (ensembles and offsembles). The MATLAB function to use it is `Xsembles_2P.m`.
