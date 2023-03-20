@@ -2,7 +2,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        XsemblesViewerUIFigure         matlab.ui.Figure
+        Xsembles2PViewerUIFigure       matlab.ui.Figure
         TabGroup                       matlab.ui.container.TabGroup
         AnalyzeTab                     matlab.ui.container.Tab
         XsembleanalysisPanel           matlab.ui.container.Panel
@@ -1274,13 +1274,13 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create XsemblesViewerUIFigure and hide until all components are created
-            app.XsemblesViewerUIFigure = uifigure('Visible', 'off');
-            app.XsemblesViewerUIFigure.Position = [100 100 313 540];
-            app.XsemblesViewerUIFigure.Name = 'Xsembles Viewer';
+            % Create Xsembles2PViewerUIFigure and hide until all components are created
+            app.Xsembles2PViewerUIFigure = uifigure('Visible', 'off');
+            app.Xsembles2PViewerUIFigure.Position = [100 100 313 540];
+            app.Xsembles2PViewerUIFigure.Name = 'Xsembles2P - Viewer';
 
             % Create TabGroup
-            app.TabGroup = uitabgroup(app.XsemblesViewerUIFigure);
+            app.TabGroup = uitabgroup(app.Xsembles2PViewerUIFigure);
             app.TabGroup.Position = [9 10 297 522];
 
             % Create AnalyzeTab
@@ -1578,7 +1578,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.PlotStimLocationButton.Text = 'Plot location of stimulated neurons';
 
             % Show the figure after all components are created
-            app.XsemblesViewerUIFigure.Visible = 'on';
+            app.Xsembles2PViewerUIFigure.Visible = 'on';
         end
     end
 
@@ -1592,7 +1592,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             createComponents(app)
 
             % Register the app with App Designer
-            registerApp(app, app.XsemblesViewerUIFigure)
+            registerApp(app, app.Xsembles2PViewerUIFigure)
 
             if nargout == 0
                 clear app
@@ -1603,7 +1603,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.XsemblesViewerUIFigure)
+            delete(app.Xsembles2PViewerUIFigure)
         end
     end
 end
