@@ -511,7 +511,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 options_title = '';
             end
 
-            Set_Figure([data.Movie.DataName ' - Ensembles' options_title],[0 0 1200 700])
+            Set_Figure([data.Movie.DataName ' - Ensembles ' options_title],[0 0 1200 700])
             fps = data.Movie.FPS;
             if isfield(data,'Analysis')
                 Plot_Xsemble_Raster(data,sort_neurons,sort_vectors)
