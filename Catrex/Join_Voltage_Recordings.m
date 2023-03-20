@@ -35,7 +35,7 @@ if voltage_a.DownsampledTo~=voltage_b.DownsampledTo
     warning('Downsampling is different between recordings!')
 end
 
-voltage_ab.DownsampledTo = voltage_a.Method;
+voltage_ab.Method = voltage_a.Method;
 if voltage_a.Method~=voltage_b.Method
     warning('Downsampling method is different between recordings!')
 end

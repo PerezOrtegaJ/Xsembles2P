@@ -24,11 +24,13 @@ default_locomotion_threshold = 1; % cm/s
 default_bin_seconds = 1;
 
 % Threshold to select neurons with enough peak signal to noise ratio (PSNR)
+default_select_th_visually = false;
 default_thPSNRdB = 20;
 
 % Spike inference algorithm
 default_inference_method = 'foopsi';
 expected_inference_method = {'foopsi','oasis','derivative'};
+default_max_iterations_foopsi = 2;
 
 % Threshold for spike inference to get the raster
 default_inference_same_th = true;
@@ -36,6 +38,9 @@ default_inference_th = 0;
 
 % Neuron ROIs (if given, no neuronal search will be done)
 default_neurons = [];
+
+% Identify xsembles (change to false if you just want to get the signals from the raw video)
+default_get_xsembles = true;
 
 %% Parse inputs
 inputs = inputParser;
@@ -50,12 +55,15 @@ addParameter(inputs,'OutputPath',default_output_path,valid_string);
 addParameter(inputs,'MotionCorrection',default_motion_correction,@islogical);
 addParameter(inputs,'MotionCorrectionThreshold',default_locomotion_threshold,valid_zero_pos_num);
 addParameter(inputs,'SpatialMaskBinning',default_bin_seconds,valid_scalar_pos);
+addParameter(inputs,'SelectPSNRThresholdVisually',default_select_th_visually,@islogical);
 addParameter(inputs,'PSNRdBThreshold',default_thPSNRdB,valid_zero_pos_num);
 addParameter(inputs,'InferenceMethod',default_inference_method,...
     @(x) any(validatestring(x,expected_inference_method)));
+addParameter(inputs,'MaxIterationsFoopsi',default_max_iterations_foopsi,valid_scalar_pos);
 addParameter(inputs,'InferenceThreshold',default_inference_th,valid_zero_pos_num);
 addParameter(inputs,'SameInferenceThreshold',default_inference_same_th,@islogical);
 addParameter(inputs,'Neurons',default_neurons,@isstruct);
+addParameter(inputs,'GetXsembles',default_get_xsembles,@islogical);
 parse(inputs,varargin{:});
 
 % Get parameters
@@ -66,11 +74,14 @@ output_path = inputs.Results.OutputPath;
 motion_correction = inputs.Results.MotionCorrection;
 locomotion_threshold = inputs.Results.MotionCorrectionThreshold;
 bin_seconds = inputs.Results.SpatialMaskBinning;
+select_th_visually = inputs.Results.SelectPSNRThresholdVisually;
 thPSNRdB = inputs.Results.PSNRdBThreshold;
 inference_method = inputs.Results.InferenceMethod;
+max_iterations_foopsi = inputs.Results.MaxIterationsFoopsi;
 inference_th = inputs.Results.InferenceThreshold;
 inference_same_th = inputs.Results.SameInferenceThreshold;
 neurons = inputs.Results.Neurons;
+get_xsembles = inputs.Results.GetXsembles;
 
 %% Get files
 if isempty(file_path)
@@ -82,6 +93,7 @@ if isempty(file_path)
     end
 else
     [path_name,name,ext] = fileparts(file_path);
+    path_name = [path_name filesep];
     file_name = [name ext];
 end
 
@@ -95,6 +107,7 @@ end
 diary('log_xsembles_2p.txt')
 
 disp('---Xsembles 2P---')
+disp(datetime)
 disp(['   Path selected: ' path_name])
 if iscell(file_name)
     disp('   Files selected: ')
@@ -117,7 +130,7 @@ frames = zeros(n_files,1);
 all_mov = [];
 for i = 1:n_files
     % Set file path
-    file_path = [path_name filesep file_name{i}];
+    file_path = [path_name file_name{i}];
     
     % Read file
     if strcmp(file_name{i}(end-2:end),'avi')
@@ -178,19 +191,43 @@ data.ROIs.NeuronRadius = neuron_radius;
 % Get voltage recordings
 for i = 1:n_files
     % Set file path
-    file_path = [path_name filesep file_name{i}];
+    file_path = [path_name file_name{i}];
     file_voltage = [file_path(1:end-3) 'csv'];
     if exist(file_voltage,'file')
         if i==1
+            disp('Loading voltage recording file...')
             data.VoltageRecording = Read_Voltage_Recording(file_voltage,sampling_period,frames(i));
         else
             voltage_extra = Read_Voltage_Recording(file_voltage,sampling_period,frames(i));
             data.VoltageRecording = Join_Voltage_Recordings(data.VoltageRecording,voltage_extra);
         end
     else
-        warning('Not all files have a voltage recording!')
+        warning('No voltage recording loaded!')
         if isfield(data,'VoltageRecording')
             data = rmfield(data,'VoltageRecording');
+        end
+        break
+    end
+end
+
+% Get optogenetic stimulation file
+for i = 1:n_files
+    % Set file path
+    file_path = [path_name file_name{i}];
+    file_stim = [file_path(1:end-3) 'xml'];
+    if exist(file_stim,'file')
+        if i==1
+            disp('Loading optogenetic stimulation file...')
+            data.Optogenetics = Read_Optogenetics_File(file_stim,sampling_period,frames(i),height);
+        else
+            optogenetics_extra = Read_Optogenetics_File(file_stim,sampling_period,frames(i),height);
+            data.Optogenetics = Join_Optogenetics_File(data.VoltageRecording,optogenetics_extra);
+        end
+        disp('   Optogenetic stimulation data loaded')
+    else
+        warning('No optogenetic stimulation file loaded!')
+        if isfield(data,'Optogenetics')
+            data = rmfield(data,'Optogenetics');
         end
         break
     end
@@ -199,6 +236,7 @@ end
 %% Fast registration
 if motion_correction
     if isfield(data,'VoltageRecording')    
+        % Motion correction
         disp('Adjusting motion (rigid)...')
         data.Movie.Images = Fast_Registration(data.Movie.Images,data.VoltageRecording.Locomotion,...
             locomotion_threshold,data.Movie.FPS,'rigid');
@@ -209,8 +247,8 @@ if motion_correction
         % Save video
         disp('Saving video...')
         tic
-        Save_Tiff_Fast(data.Movie.Images,[output_path filesep session_name...
-            '_motioncorrection.tif'])
+        movefile([output_path session_name '.tif'],[output_path session_name '_raw.tif']);
+        Save_Tiff_Fast(data.Movie.Images,[output_path session_name '.tif'])
         t=toc; disp(['   Done (' num2str(t) ' seconds)'])
     else
         warning('There is no voltage recording, so it is not possible to do a fast registration!')
@@ -300,6 +338,7 @@ if isempty(neurons)
     data.ROIs.SearchOptions = options;
     data.ROIs.ExtraSearchOptions = extra_options;
     data.ROIs.EvaluationCriteria = criteria;
+    data.ROIs.GivenROIs = false;
     data.Movie.Summary = summary;
 else
     tic;disp(['Reading ' num2str(length(neurons)) ' ROIs given.'])
@@ -312,6 +351,7 @@ else
     data.ROIs.SearchOptions = [];
     data.ROIs.ExtraSearchOptions = [];
     data.ROIs.EvaluationCriteria = 'neurons loaded from variable';
+    data.ROIs.GivenROIs = true;
     data.Movie.Summary = [];
     t=toc; disp(['   Done (' num2str(t) ' seconds)'])
 end
@@ -382,6 +422,13 @@ data.Transients.PSNRdB = PSNRdB;
 %                - 5dB is needed to distinguish features with certainty
 %                - 10 dB 'acceptable'
 %                - 40 dB 'excellent' 
+
+if select_th_visually
+    tic; disp('Waiting for selecting a PSNR trheshold...')
+    thPSNRdB = Select_Neuron_Threshold(data);
+    fprintf('   PSNR threshold set to: %i \n',thPSNRdB)
+end
+
 id = find(data.Transients.PSNRdB>thPSNRdB);
 n_final = length(id);
 
@@ -393,7 +440,7 @@ fprintf('Doing spike inference from %i of %i cells above %i dB PSNR...\n',...
 preprocessed = Preprocessing(data.Transients.Filtered,data.Movie.FPS);
 
 % Get spike inference
-[inf,mdl] = Get_Spike_Inference(preprocessed(id,:),inference_method);
+[inf,mdl] = Get_Spike_Inference(preprocessed(id,:),inference_method,max_iterations_foopsi);
 
 % Assign to the variables
 inference = zeros(n_neurons,total_frames);
@@ -425,44 +472,49 @@ data.Transients.SameThreshold = inference_same_th;
 data.Transients.Threshold = inference_th;
 
 %% Remove inactive neurons
-active = sum(raster,2)>0;
+% Do not remove neurons if given ROIs
+if ~data.ROIs.GivenROIs
+    active = sum(raster,2)>0;
+    
+    % Remove from Neurons vairable
+    data.DiscardedNeurons = data.Neurons(~active);
+    data.Neurons = data.Neurons(active);
+    
+    % Remove from Transients
+    data.Transients.Raw = data.Transients.Raw(active,:);
+    data.Transients.Filtered =data.Transients.Filtered(active,:);
+    data.Transients.Smoothed = data.Transients.Smoothed(active,:);
+    data.Transients.F0 = data.Transients.F0(active,:);
+    data.Transients.Cells = nnz(active);
+    data.Transients.PSNRdB = data.Transients.PSNRdB(active);
+    data.Transients.Inference = data.Transients.Inference(active,:);
+    data.Transients.Model = data.Transients.Model(active,:);
+    data.Transients.Raster = data.Transients.Raster(active,:);
+    data.Transients.InferenceTh = data.Transients.InferenceTh(active,:);
+    
+    % Remove from ROIs
+    data.ROIs.CellMasks = data.ROIs.CellMasks(:,:,active);
+    data.ROIs.CellWeightedMasks = data.ROIs.CellWeightedMasks(:,:,active);
+    data.ROIs.AuraMasks = data.ROIs.AuraMasks(:,:,active);
+    data.ROIs.CellMasksImage = sum(data.ROIs.CellMasks,3);
+    data.ROIs.CellWeightedMasksImage = sum(data.ROIs.CellWeightedMasks,3);
+    data.ROIs.AuraMasksImage = sum(data.ROIs.AuraMasks,3);
+    
+    % Remove from XY
+    data.XY.All = data.XY.All(active,:);
+    
+    % Display neurons removed
+    disp([num2str(nnz(~active)) ' neurons removed'])
+end
 
-% Remove from Neurons vairable
-data.DiscardedNeurons = data.Neurons(~active);
-data.Neurons = data.Neurons(active);
-
-% Remove from Transients
-data.Transients.Raw = data.Transients.Raw(active,:);
-data.Transients.Filtered =data.Transients.Filtered(active,:);
-data.Transients.Smoothed = data.Transients.Smoothed(active,:);
-data.Transients.F0 = data.Transients.F0(active,:);
-data.Transients.Cells = nnz(active);
-data.Transients.PSNRdB = data.Transients.PSNRdB(active);
-data.Transients.Inference = data.Transients.Inference(active,:);
-data.Transients.Model = data.Transients.Model(active,:);
-data.Transients.Raster = data.Transients.Raster(active,:);
-data.Transients.InferenceTh = data.Transients.InferenceTh(active,:);
-
-% Remove from ROIs
-data.ROIs.CellMasks = data.ROIs.CellMasks(:,:,active);
-data.ROIs.CellWeightedMasks = data.ROIs.CellWeightedMasks(:,:,active);
-data.ROIs.AuraMasks = data.ROIs.AuraMasks(:,:,active);
-data.ROIs.CellMasksImage = sum(data.ROIs.CellMasks,3);
-data.ROIs.CellWeightedMasksImage = sum(data.ROIs.CellWeightedMasks,3);
-data.ROIs.AuraMasksImage = sum(data.ROIs.AuraMasks,3);
-
-% Remove from XY
-data.XY.All = data.XY.All(active,:);
-
-% Display neurons removed
-disp([num2str(nnz(~active)) ' neurons removed'])
-
-% Write log
+%% Write log
 data.Log = readlines('log_xsembles_2p.txt');
 delete('log_xsembles_2p.txt')
 
 %% Get ensembles
-data.Analysis = Get_Xsembles(data.Transients.Raster);
+if get_xsembles
+    data.Analysis = Get_Xsembles(data.Transients.Raster);
+end
 
 %% Save data in file
 tic
@@ -482,7 +534,7 @@ assignin('base',['data_' data.Movie.DataName],data);
 eval(['data_' data.Movie.DataName '=data;']);
 
 % Save data
-save([output_path filesep data.Movie.SessionName],['data_' data.Movie.DataName],'-v7.3')
+save([output_path  data.Movie.SessionName],['data_' data.Movie.DataName],'-v7.3')
     
 t = toc; disp(['   Done (' num2str(t) ' seconds)'])
 
@@ -492,11 +544,8 @@ if isfield(data,'Analysis')
     disp('Plot and saving figure...')
 
     Set_Figure(data.Movie.DataName,[0 0 1200 700])
-    if isfield(data,'VoltageRecording')
-        Plot_Ensemble_Raster(data.Analysis,data.Movie.FPS,true,false,false,data.VoltageRecording)
-    else
-        Plot_Ensemble_Raster(data.Analysis,data.Movie.FPS,true,false,false)
-    end
-    savefig([output_path filesep data.Movie.SessionName '.fig'])
+    Plot_Xsemble_Raster(data,true,false)
+
+    savefig([output_path  data.Movie.SessionName '.fig'])
     t = toc; disp(['   Done (' num2str(t) ' seconds)'])
 end

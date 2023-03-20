@@ -47,7 +47,7 @@ end
 n = length(id_loco);
 
 % Plot summary of motion correction
-Set_Figure('Preview of motion correction',[0 0 1000 200])
+Set_Figure('Frames to be corrected',[0 0 1000 200])
 plot(locomotion); hold on
 plot(id_loco,locomotion(id_loco),'.k')
 ylabel('locomotion [cm/s]')

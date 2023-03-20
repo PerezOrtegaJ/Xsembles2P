@@ -27,6 +27,7 @@ function [indices,widths,amplitudes,ini_fin_times] = Find_Peaks(data,threshold,j
 % by Jesus E. Perez-Ortega, Feb-2012
 % last modification July-2019
 % Modified Oct 2021
+% Modified Feb 2023
 
 switch nargin
     case 6
@@ -74,15 +75,12 @@ indices=zeros(F,1);
 if ~count
     if detect_peaks
         disp('No peaks found!')
-        widths = [];
-        amplitudes = [];
-        ini_fin_times = [];
     else
         disp('No valleys found!')
-        widths = [];
-        amplitudes = [];
-        ini_fin_times = [];
     end
+    widths = [];
+    amplitudes = [];
+    ini_fin_times = [];
     return
 end
 
@@ -129,6 +127,9 @@ if ignore_ini_fin
         else
             disp('No valleys found!')
         end
+        widths = [];
+        amplitudes = [];
+        ini_fin_times = [];
         return
     end
 end
@@ -182,6 +183,9 @@ if minimum_width
         else
             disp('No valleys found!')
         end
+        widths = [];
+        amplitudes = [];
+        ini_fin_times = [];
         return
     end
 end

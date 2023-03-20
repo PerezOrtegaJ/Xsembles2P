@@ -1,15 +1,18 @@
-function [inference,model] = Get_Spike_Inference(transients,method)
+function [inference,model] = Get_Spike_Inference(transients,method,max_iterations)
 % Get spike inference given a specific method (derivative, oasis or foopsi)
 %
-%   [inference,model] = Get_Spike_Inference(transients,method)
+%   [inference,model] = Get_Spike_Inference(transients,method,max_iterations)
 %
-%            default: method = 'foopsi'
+%            default: method = 'foopsi'; ,max_iterations = 10
 %                     method could be 'foopsi', 'oasis' or 'derivative'
 %
 % By Jesus Perez-Ortega, Nov 2019
 
-if nargin==1
-    method = 'foopsi';
+if nargin<3
+    max_iterations = 10; % for foopsi method
+    if nargin<2
+        method = 'foopsi';
+    end
 end
 
 % Get number of signals
@@ -50,8 +53,7 @@ switch method
         notmodeled = 0;
         for i = 1:n
             % Get foopsi model
-            maxiter = 100; % updated Aug 2021
-            [singleModel,singleInference] = foopsi_oasisAR2(transients(i,:),[],[],true,true,[],maxiter);
+            [singleModel,singleInference] = foopsi_oasisAR2(transients(i,:),[],[],true,true,[],max_iterations);
             if ~sum(singleModel)
                 notmodeled = notmodeled+1;
             end

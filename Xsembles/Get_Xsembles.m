@@ -34,6 +34,7 @@ if isfile('log_xsemble_analysis.txt')
 end
 diary('log_xsemble_analysis.txt')
 disp('---Xsembles---')
+disp(datetime)
 
 % Get initial time point
 t_initial = tic;
@@ -153,7 +154,7 @@ disp(['   Identifying significant neurons for each potential ensemble and its '.
 structure = structures.Activated;
 structure_silenced = structures.Silenced;
 structure_belongingness = structures.BelongingnessTest;
-structure_EB = structures.EB;
+structure_EPI = structures.EPI;
 
 structure_p = structures.P;
 
@@ -235,7 +236,7 @@ if n_nonensembles
     nonensemble_structure = structure(id_nonensemble,:);
     nonensemble_structure_silenced = structure_silenced(id_nonensemble,:);
     nonensemble_structure_belongingness = structure_belongingness(id_nonensemble,:);
-    nonensemble_structure_EB = structure_EB(id_nonensemble,:);
+    nonensemble_structure_EPI = structure_EPI(id_nonensemble,:);
     nonensemble_structure_p = structure_p(id_nonensemble,:);
     nonensemble_structure_weights = structure_weights(id_nonensemble,:);
     nonensemble_structure_weights_significant = structure_weights_significant(id_nonensemble,:);
@@ -257,7 +258,7 @@ if n_nonensembles
     structure = structure(id_ensemble,:);
     structure_silenced = structure_silenced(id_ensemble,:);
     structure_belongingness = structure_belongingness(id_ensemble,:);
-    structure_EB = structure_EB(id_ensemble,:);
+    structure_EPI = structure_EPI(id_ensemble,:);
     structure_p = structure_p(id_ensemble,:);
     structure_weights = structure_weights(id_ensemble,:);
     structure_weights_significant = structure_weights_significant(id_ensemble,:);
@@ -293,7 +294,7 @@ vector_count = vector_count(ensemble_id_sorted);
 structure = structure(ensemble_id_sorted,:);
 structure_silenced = structure_silenced(ensemble_id_sorted,:);
 structure_belongingness = structure_belongingness(ensemble_id_sorted,:);
-structure_EB = structure_EB(ensemble_id_sorted,:);
+structure_EPI = structure_EPI(ensemble_id_sorted,:);
 structure_p = structure_p(ensemble_id_sorted,:);    
 structure_weights = structure_weights(ensemble_id_sorted,:);
 structure_weights_significant = structure_weights_significant(ensemble_id_sorted,:);
@@ -316,6 +317,11 @@ end
 activation_sequence = zeros(1,frames);
 for i = 1:n_ensembles
     activation_sequence(ensemble_activity_binary(i,:)) = i;
+end
+
+activation_sequence_nonensembles = zeros(1,frames);
+for i = 1:n_nonensembles
+    activation_sequence_nonensembles(nonensemble_activity_binary(i,:)) = i;
 end
 
 %% Add to analysis structure
@@ -356,7 +362,7 @@ analysis.Ensembles.VectorCount = vector_count;
 analysis.Ensembles.Structure = structure;
 analysis.Ensembles.StructureSilenced = structure_silenced;
 analysis.Ensembles.StructureBelongingness = structure_belongingness;
-analysis.Ensembles.EB = structure_EB;
+analysis.Ensembles.EPI = structure_EPI;
 analysis.Ensembles.StructureP = structure_p;
 analysis.Ensembles.StructureWeights = structure_weights;
 analysis.Ensembles.StructureWeightsSignificant = structure_weights_significant;
@@ -374,6 +380,7 @@ analysis.Ensembles.AlphaEnsemble = alpha_ensemble;
 
 if n_nonensembles
     analysis.NonEnsembles.Count = n_nonensembles;
+    analysis.NonEnsembles.ActivationSequence = activation_sequence_nonensembles;
     analysis.NonEnsembles.Activity = nonensemble_activity;
     analysis.NonEnsembles.ActivityBinary = nonensemble_activity_binary;
     analysis.NonEnsembles.Networks = nonensemble_networks;
@@ -385,7 +392,7 @@ if n_nonensembles
     analysis.NonEnsembles.Structure = nonensemble_structure;
     analysis.NonEnsembles.StructureSilenced = nonensemble_structure_silenced;
     analysis.NonEnsembles.StructureBelongingness = nonensemble_structure_belongingness;
-    analysis.NonEnsembles.EB = nonensemble_structure_EB;
+    analysis.NonEnsembles.EPI = nonensemble_structure_EPI;
     analysis.NonEnsembles.StructureP = nonensemble_structure_p;
     analysis.NonEnsembles.StructureWeights = nonensemble_structure_weights;
     analysis.NonEnsembles.StructureWeightsSignificant = nonensemble_structure_weights_significant;

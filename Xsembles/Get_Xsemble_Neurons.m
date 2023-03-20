@@ -6,6 +6,7 @@ function [structures,neurons,ensemble_vectors,ensemble_indices]...
 %   = Get_Xsemble_Neurons(raster,vector_id,sequence)
 %
 % By Jesus Perez-Ortega, Aug 2022
+% Modified Mar 2023 (EPI)
 
 % Get number of ensembles
 ensembles = length(unique(sequence));
@@ -32,7 +33,7 @@ for i = 1:ensembles
         Get_Evoked_Neurons(raster,ensemble_activity);
 
     % Get ensemble belonging index
-    EB = Get_EB(raster,ensemble_activity);
+    EPI = Get_EPI(raster,ensemble_activity);
 
     % Identify and sort significantly active neurons
     neurons_i = find(significantly_active);
@@ -48,7 +49,7 @@ for i = 1:ensembles
     structure_activated(i,:) = significantly_active;
     structure_silenced(i,:) = significantly_silence;
     structure_belongingness(i,:) = belongingness;
-    structure_EB(i,:) = EB;
+    structure_EPI(i,:) = EPI;
     structure_p(i,:) = p;
 end
 
@@ -56,7 +57,7 @@ end
 structures.Activated = structure_activated;
 structures.Silenced = structure_silenced;
 structures.BelongingnessTest = structure_belongingness;
-structures.EB = structure_EB;
+structures.EPI = structure_EPI;
 structures.P = structure_p;
 
 % Set neurons

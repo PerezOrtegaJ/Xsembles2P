@@ -125,7 +125,7 @@ function [c, active_set, g, s] = update_g(y, active_set, lam)
     y = reshape(y,[],1);    % fluorescence data
     maxl = max(active_set(:, 4));   % maximum ISI
     c = zeros(size(y));     % the optimal denoised trace
-    h = [];
+    h = []; % added by JP
 
     %% find the optimal g and get the warm started active_set
     g = fminbnd(@rss_g, 0, 1);
