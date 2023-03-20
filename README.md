@@ -1,5 +1,5 @@
 # Xsembles2P
-**_Xsembles2P_** is a tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify xsembles (ensembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
+**_Xsembles2P_** is a faster<sup>†</sup> tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify xsembles (ensembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
 
 The algorithm performs the following computations:
 
@@ -10,14 +10,16 @@ The algorithm performs the following computations:
 5. Get calcium signals.
 6. Do spike inference.
 7. Get population activity (binary raster).
-8. Find ensembles (and offsembles)\*.
+8. Find xsembles<sup>††</sup> (ensembles and offsembles).
 9. Save results.
 10. Plot results.
 
-\* Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an ensemble (active neurons) and its associated offsemble (silenced neurons).
+<sup>†</sup> For example, a 5 minute long video of 256x256 pixels at 12.5 frames per second where the animal was running 50% of the time, the entire analysis will take less than 10 minutes in a usual personal computer. This tool is very convenient if you want to perform online targeting of ensemble neurons during your experiment.
+
+<sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an ensemble (active neurons) and its associated offsemble (silenced neurons).
 
 ## Citation
-If you use **_Xsembles2P_**, please cite the our [paper](https://elifesciences.org/articles/64449):
+If you use **_Xsembles2P_**, please cite our [paper](https://elifesciences.org/articles/64449):
 > Pérez-Ortega J, Alejandre-García T, Yuste R. 2021. Long-term stability of cortical ensembles. Elife 10:1–19. doi:10.7554/eLife.64449
 
 ## How to run Xsembles2P
@@ -60,11 +62,9 @@ Xsembles_2P('','SamplingPeriod',0.1,'NeuronRadius',4)
 **_Xsembles2P - Viewer_** is a friendly graphical user interface for running `Xsembles_2P.m` and also for plotting the results generated. The MATLAB function to use it is `Xsembles_2P_Viewer.m`.
 
 1. Open the GUI:
-
 ```matlab
 Xsembles_2P_Viewer
 ```
-
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Analyze.png" width=50% height=50%>
 
 2. Then, click on `...` to find and select the video that you want to analyze.
@@ -74,10 +74,11 @@ Xsembles_2P_Viewer
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Visualize.png" width=50% height=50%>
 
 This is an example of an experiment with visual stimuli of drifting gratings in 8 different directions. Note that this algorithm is not using stimuli information to extact ensemble, stimuli information is optional to visualize and perform subsequent analysis.
+
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Raster.png" width=100% height=100%>
 
 ## Results are saved in a structure variable Data
-Here are the variable inside the structure variable `data`:
+The structure variable `data` contains the following information:
 
 - data.Movie
   - data.Movie.FilePath
@@ -93,7 +94,7 @@ Here are the variable inside the structure variable `data`:
   - data.Movie.ImageAverage
   - data.Movie.ImageSTD
   - data.Movie.ImagePSNR
-  - data.Movie.Summary
+  - data.Movie.Summary  
 - data.ROIs
   - data.ROIs.CellRadius
   - data.ROIs.AuraRadius
