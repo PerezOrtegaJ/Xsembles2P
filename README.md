@@ -34,3 +34,13 @@ The common parameters to change are: the sampling period (in seconds) and the ne
 ```matlab
 Xsembles_2P('','SamplingPeriod',0.1,'NeuronRadius',4)
 ```
+
+# Xsembles2P - Viewer
+**Xsembles2P - Viewer** is not oly a GUI to run `Xsembles_2P.m` but also to plot the results generated. The MATLAB function to use it is `Xsembles_2P_Viewer.m`. Use the following code to run it:
+
+```matlab
+Xsembles_2P_Viewer
+```
+
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Analyze.png" width=50% height=50%><img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Visualize.png" width=50% height=50%>
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Raster.png" width=100% height=100%>
