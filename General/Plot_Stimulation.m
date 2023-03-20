@@ -11,7 +11,7 @@ function legends = Plot_Stimulation(stimuli,amplitude,stim_text,colors)
 % Modified Mar 2023 (InputMin)
 
 if nargin<4
-    colors = Read_Colors(4);
+    colors = lines(4);
     colors = [colors; Attenuate_Colors(colors)];
     if nargin<3
         stim_text = '→↗↑↖←↙↓↘';
