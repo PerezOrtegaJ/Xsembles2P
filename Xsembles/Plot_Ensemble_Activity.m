@@ -34,7 +34,7 @@ for i = 1:n_ensembles
     signal = ensemble_activity(i,:);
     Plot_Area(signal,0,colors(i,:),0.5); hold on
 end    
-ylabel({'fraction of','ensemble neuronsyl'})
+ylabel({'fraction of','ensemble neurons'})
 title('Ensemble activity')
 if n_frames
     xlim([0 n_frames])
