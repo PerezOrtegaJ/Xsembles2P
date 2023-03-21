@@ -67,7 +67,7 @@ Xsembles_2P_Viewer
 ```
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Analyze.png" width=50% height=50%>
 
-2. Then, click on `...` to find and select the video that you want to analyze.
+2. Then, click on the button `...` to find and select the video that you want to analyze.
 3. Specify the parameters and click the button `Analyze video`.
 4. Once the video is analyzed, you can plot the raster with the ensembles clicking the button `Plot raster`.
 
