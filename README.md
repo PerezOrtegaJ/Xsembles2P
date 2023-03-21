@@ -79,16 +79,17 @@ This is an example of an experiment with visual stimuli of drifting gratings in 
 
 You can plot the spatial location of neurons of a specific xsemble. Select the xsemble from the dropdown menu `highlight xsemble` and click `Plot spatial location`.
 
-<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Ensemble_ROIs.png" width=100% height=100%>
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/39e709848a2e8116b7592e4aaa14a0733efd3223/Images/Ensemble_ROIs.png" width=100% height=100%>
 
-To plot the calcium signal of an individual neurons, just click on the neuron ROI.
+To plot the calcium signal of an individual neuron, just click on the neuron ROI.
 
-<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Single_neuron.png" width=100% height=100%>
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/39e709848a2e8116b7592e4aaa14a0733efd3223/Images/Single_neuron.png" width=100% height=100%>
 
-## Results are saved in a structure variable Data
+## Results are saved in a structure variable `data`
 The structure variable `data` contains the following information:
 
-- data.Movie
+<details><summary>data.Movie</summary>
+
   - data.Movie.FilePath
   - data.Movie.FileName
   - data.Movie.DataName
@@ -103,7 +104,9 @@ The structure variable `data` contains the following information:
   - data.Movie.ImageSTD
   - data.Movie.ImagePSNR
   - data.Movie.Summary  
-- data.ROIs
+</details>
+<details><summary>data.ROIs</summary>
+
   - data.ROIs.CellRadius
   - data.ROIs.AuraRadius
   - data.ROIs.EvaluationCriteria
@@ -117,7 +120,9 @@ The structure variable `data` contains the following information:
   - data.ROIs.CellWeightedMasksImage
   - data.ROIs.AuraMasksImage
   - data.ROIs.NeuropilMask
-- data.VoltageRecording
+</details>
+<details><summary>data.VoltageRecording</summary>
+
   - data.VoltageRecording.Stimuli
   - data.VoltageRecording.Frequency
   - data.VoltageRecording.Locomotion
@@ -126,7 +131,9 @@ The structure variable `data` contains the following information:
   - data.VoltageRecording.RecordingSampleRate
   - data.VoltageRecording.DownsampledTo
   - data.VoltageRecording.Method
-- data.Optogenetics
+</details>
+<details><summary>data.Optogenetics</summary>
+
   - data.Optogenetics.File
   - data.Optogenetics.XY
   - data.Optogenetics.IsSpiral
@@ -134,8 +141,12 @@ The structure variable `data` contains the following information:
   - data.Optogenetics.RadiusMicrons
   - data.Optogenetics.RadiusPixels
   - data.Optogenetics.Stimulation
-- data.XY.All
-- data.Neurons
+</details>
+
+data.XY.All
+
+<details><summary>data.Neurons</summary>
+
   - data.Neurons(i).pixels
   - data.Neurons(i).weight_pixels
   - data.Neurons(i).x_pixels
@@ -149,7 +160,9 @@ The structure variable `data` contains the following information:
   - data.Neurons(i).Circularity
   - data.Neurons(i).Perimeter
   - data.Neurons(i).PSNRdB
-- data.Transients
+</details>
+<details><summary>data.Transients</summary>
+
   - data.Transients.Raw
   - data.Transients.Filtered
   - data.Transients.Smoothed
@@ -167,7 +180,9 @@ The structure variable `data` contains the following information:
   - data.Transients.InferenceTh
   - data.Transients.SameThreshold
   - data.Transients.Threshold
-- data.DiscardedNeurons
+</details>
+<details><summary>data.DiscardedNeurons</summary>
+
   - data.DiscardedNeurons(i).pixels
   - data.DiscardedNeurons(i).weight_pixels
   - data.DiscardedNeurons(i).x_pixels
@@ -181,8 +196,12 @@ The structure variable `data` contains the following information:
   - data.DiscardedNeurons(i).Circularity
   - data.DiscardedNeurons(i).Perimeter
   - data.DiscardedNeurons(i).PSNRdB 
-- data.Log
-- data.Analysis
+</details>
+
+data.Log
+
+<details><summary>data.Analysis</summary>
+
   - data.Analysis.Options
     - data.Analysis.Options.Network
       - data.Analysis.Options.Network.Bin
@@ -276,3 +295,4 @@ The structure variable `data` contains the following information:
     - data.Analysis.NonEnsembles.PeaksCount
     - data.Analysis.NonEnsembles.Probability
   - data.Analysis.Log
+</details>
