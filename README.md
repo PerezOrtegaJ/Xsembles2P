@@ -14,7 +14,7 @@ The algorithm performs the following computations:
 9. Save results.
 10. Plot results.
 
-<sup>†</sup> For example, a 5 minute long video of 256x256 pixels at 12.5 frames per second where the animal was running 50% of the time, the entire analysis will take less than 10 minutes in a usual personal computer. This tool is very convenient if you want to perform online targeting of ensemble neurons during your experiment.
+<sup>†</sup> For example, a 5 minute long video of 256x256 pixels at 12.5 frames per second where the animal ran 50% of the time, the entire analysis will take less than 10 minutes in a usual personal computer. Motion correction consumes most of the time, but, if you do not need to perform it, this analysis can last just a couple of minutes. This tool is very convenient if you want to perform online targeting of ensemble neurons during your experiment.
 
 <sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an ensemble (active neurons) and its associated offsemble (silenced neurons).
 
@@ -76,6 +76,14 @@ Xsembles_2P_Viewer
 This is an example of an experiment with visual stimuli of drifting gratings in 8 different directions. Note that this algorithm is not using stimuli information to extact ensemble, stimuli information is optional to visualize and perform subsequent analysis.
 
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Raster.png" width=100% height=100%>
+
+You can plot the spatial location of neurons of a specific xsemble. Select the xsemble from the dropdown menu `highlight xsemble` and click `Plot spatial location`.
+
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Ensemble_ROIs.png" width=100% height=100%>
+
+To plot the calcium signal of an individual neurons, just click on the neuron ROI.
+
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Single_neuron.png" width=100% height=100%>
 
 ## Results are saved in a structure variable Data
 The structure variable `data` contains the following information:
