@@ -10,13 +10,13 @@ The algorithm performs the following computations:
 5. Get calcium signals.
 6. Do spike inference.
 7. Get population activity (binary raster).
-8. Find xsembles<sup>††</sup> (ensembles and offsembles).
+8. Find ensembles<sup>††</sup> (onsembles and offsembles).
 9. Save results.
 10. Plot results.
 
 <sup>†</sup> For example, a 5 minute long video of 256x256 pixels at 12.5 frames per second where the animal ran 50% of the time, the entire analysis will take less than 10 minutes in a usual personal computer. Motion correction consumes most of the time, but, if you do not need to perform it, this analysis can last just a couple of minutes. This tool is very convenient if you want to perform online targeting of ensemble neurons during your experiment.
 
-<sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an ensemble (active neurons) and its associated offsemble (silenced neurons).
+<sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an onsemble (active neurons) and its associated offsemble (silenced neurons).
 
 ## Citation
 If you use **_Xsembles2P_**, please cite our [paper](https://elifesciences.org/articles/64449):
@@ -75,9 +75,9 @@ Xsembles_2P_Viewer
 
 This is an example of an experiment with visual stimuli of drifting gratings in 8 different directions. Note that this algorithm is not using stimuli information to extact ensemble, stimuli information is optional to visualize and perform subsequent analysis.
 
-<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Raster.png" width=100% height=100%>
+<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/f0d7a49e21df006a07a2caa0e66a1209c7cc7281/Images/Raster.png" width=100% height=100%>
 
-You can plot the spatial location of neurons of a specific xsemble. Select the xsemble from the dropdown menu `highlight xsemble` and click `Plot spatial location`.
+You can plot the spatial location of neurons of a specific ensemble. Select the ensemble from the dropdown menu `highlight xsemble` and click `Plot spatial location`.
 
 <img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/39e709848a2e8116b7592e4aaa14a0733efd3223/Images/Ensemble_ROIs.png" width=100% height=100%>
 
@@ -207,21 +207,13 @@ data.Log
       - data.Analysis.Options.Network.Bin
       - data.Analysis.Options.Network.Iterations
       - data.Analysis.Options.Network.Alpha
-      - data.Analysis.Options.Network.NetworkMethod
-      - data.Analysis.Options.Network.ShuffleMethod
-      - data.Analysis.Options.Network.SingleThreshold
     - data.Analysis.Options.Vectors
-      - data.Analysis.Options.Vectors.Method
       - data.Analysis.Options.Vectors.CoactivityThreshold
     - data.Analysis.Options.Clustering
-      - data.Analysis.Options.Clustering.SimilarityMeasure
-      - data.Analysis.Options.Clustering.LinkageMethod
-      - data.Analysis.Options.Clustering.EvaluationIndex
-      - data.Analysis.Options.Clustering.EvaluationClustering
       - data.Analysis.Options.Clustering.Range
+      - data.Analysis.Options.Clustering.Fixed
     - data.Analysis.Options.Ensemble
       - data.Analysis.Options.Ensemble.Iterations
-      - data.Analysis.Options.Ensemble.Alpha
   - data.Analysis.Raster
   - data.Analysis.Neurons
   - data.Analysis.Frames
@@ -234,65 +226,42 @@ data.Log
   - data.Analysis.Clustering
     - data.Analysis.Clustering.Similarity
     - data.Analysis.Clustering.Tree
+    - data.Analysis.Clustering.TreeID
+    - data.Analysis.Clustering.Fixed
     - data.Analysis.Clustering.RecommendedClusters
-    - data.Analysis.Clustering.ClusteringIndex
-    - data.Analysis.Clustering.EvaluationClustering
     - data.Analysis.Clustering.ClusteringRange
     - data.Analysis.Clustering.ClusteringIndices
-    - data.Analysis.Clustering.TreeID
   - data.Analysis.Ensembles
     - data.Analysis.Ensembles.Count
     - data.Analysis.Ensembles.ActivationSequence
     - data.Analysis.Ensembles.Activity
-    - data.Analysis.Ensembles.ActivityBinary
-    - data.Analysis.Ensembles.Networks
+    - data.Analysis.Ensembles.OnsembleActivity
+    - data.Analysis.Ensembles.OffsembleActivity
+    - data.Analysis.Ensembles.OnsembleNetworks
     - data.Analysis.Ensembles.OffsembleNetworks
-    - data.Analysis.Ensembles.AllEnsembleNetwork
+    - data.Analysis.Ensembles.AllOnsembleNetwork
     - data.Analysis.Ensembles.AllOffsembleNetwork
     - data.Analysis.Ensembles.Vectors
     - data.Analysis.Ensembles.Indices
-    - data.Analysis.Ensembles.Similarity
     - data.Analysis.Ensembles.VectorCount
-    - data.Analysis.Ensembles.Structure
-    - data.Analysis.Ensembles.StructureSilenced
+    - data.Analysis.Ensembles.Similarity
+    - data.Analysis.Ensembles.StructureOn
+    - data.Analysis.Ensembles.StructureOff
+    - data.Analysis.Ensembles.StructureTrinary
     - data.Analysis.Ensembles.StructureBelongingness
-    - data.Analysis.Ensembles.EPI
     - data.Analysis.Ensembles.StructureP
     - data.Analysis.Ensembles.StructureWeights
     - data.Analysis.Ensembles.StructureWeightsSignificant
-    - data.Analysis.Ensembles.StructureSorted
+    - data.Analysis.Ensembles.EPI
     - data.Analysis.Ensembles.Weights
-    - data.Analysis.Ensembles.EnsembleNeurons
+    - data.Analysis.Ensembles.OnsembleNeurons
     - data.Analysis.Ensembles.OffsembleNeurons
     - data.Analysis.Ensembles.NeuronID
     - data.Analysis.Ensembles.VectorID
     - data.Analysis.Ensembles.Durations
-    - data.Analysis.Ensembles.PeaksCount
+    - data.Analysis.Ensembles.ContinuousActivationCount
+    - data.Analysis.Ensembles.FrameActivationCount
     - data.Analysis.Ensembles.Probability
     - data.Analysis.Ensembles.Iterations
-    - data.Analysis.Ensembles.AlphaEnsemble
-  - data.Analysis.NonEnsembles
-    - data.Analysis.NonEnsembles.Count
-    - data.Analysis.NonEnsembles.ActivationSequence
-    - data.Analysis.NonEnsembles.Activity
-    - data.Analysis.NonEnsembles.ActivityBinary
-    - data.Analysis.NonEnsembles.Networks
-    - data.Analysis.NonEnsembles.OffsembleNetworks
-    - data.Analysis.NonEnsembles.Vectors
-    - data.Analysis.NonEnsembles.Indices
-    - data.Analysis.NonEnsembles.Similarity
-    - data.Analysis.NonEnsembles.VectorCount
-    - data.Analysis.NonEnsembles.Structure
-    - data.Analysis.NonEnsembles.StructureSilenced
-    - data.Analysis.NonEnsembles.StructureBelongingness
-    - data.Analysis.NonEnsembles.EPI
-    - data.Analysis.NonEnsembles.StructureP
-    - data.Analysis.NonEnsembles.StructureWeights
-    - data.Analysis.NonEnsembles.StructureWeightsSignificant
-    - data.Analysis.NonEnsembles.EnsembleNeurons
-    - data.Analysis.NonEnsembles.OffsembleNeurons
-    - data.Analysis.NonEnsembles.Durations
-    - data.Analysis.NonEnsembles.PeaksCount
-    - data.Analysis.NonEnsembles.Probability
   - data.Analysis.Log
 </details>
