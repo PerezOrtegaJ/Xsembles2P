@@ -63,6 +63,6 @@ for i = 1:n_stims
 
     % Get total number of frames
     trial_times = [trial_times; ini:fin+extra];
-    trial_responses = [trial_responses; response(ini:fin+extra)]; 
+    trial_responses = [trial_responses; response(ini:fin) zeros(1,extra)]; 
 %     trial_responses = [trial_responses; zeros(1,inidiff) response(ini:fin+extra) zeros(1,findiff)]; 
 end

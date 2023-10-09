@@ -1,6 +1,6 @@
 function Xsembles_2P(varargin)
-% Analyze two-photon calcium imaging video to extract neuronal activity and
-% identify xsembles (ensembles and offsembles).
+% Analyze two-photon calcium imaging video(s) to extract neuronal activity and
+% identify ensembles (onsembles and offsembles).
 %
 %       Xsembles_2P()
 %
@@ -9,6 +9,7 @@ function Xsembles_2P(varargin)
 %       Xsembles_2P(FilePath,...)
 % 
 % By Jesus Perez-Ortega, Nov 2022
+% Modified Sep 2023 (New Get_Xsembles funtion)
 
 %% Default values
 default_file_path = '';
@@ -25,16 +26,15 @@ default_bin_seconds = 1;
 
 % Threshold to select neurons with enough peak signal to noise ratio (PSNR)
 default_select_th_visually = false;
-default_thPSNRdB = 20;
+default_thPSNRdB = 10;
 
 % Spike inference algorithm
 default_inference_method = 'foopsi';
 expected_inference_method = {'foopsi','oasis','derivative'};
 default_max_iterations_foopsi = 2;
 
-% Threshold for spike inference to get the raster
-default_inference_same_th = true;
-default_inference_th = 0;
+% Threshold coefficients for spike inference to get the raster
+default_inference_th_b = [];
 
 % Neuron ROIs (if given, no neuronal search will be done)
 default_neurons = [];
@@ -60,8 +60,7 @@ addParameter(inputs,'PSNRdBThreshold',default_thPSNRdB,valid_zero_pos_num);
 addParameter(inputs,'InferenceMethod',default_inference_method,...
     @(x) any(validatestring(x,expected_inference_method)));
 addParameter(inputs,'MaxIterationsFoopsi',default_max_iterations_foopsi,valid_scalar_pos);
-addParameter(inputs,'InferenceThreshold',default_inference_th,valid_zero_pos_num);
-addParameter(inputs,'SameInferenceThreshold',default_inference_same_th,@islogical);
+addParameter(inputs,'InferenceThresholdB',default_inference_th_b,valid_zero_pos_num);
 addParameter(inputs,'Neurons',default_neurons,@isstruct);
 addParameter(inputs,'GetXsembles',default_get_xsembles,@islogical);
 parse(inputs,varargin{:});
@@ -78,18 +77,28 @@ select_th_visually = inputs.Results.SelectPSNRThresholdVisually;
 thPSNRdB = inputs.Results.PSNRdBThreshold;
 inference_method = inputs.Results.InferenceMethod;
 max_iterations_foopsi = inputs.Results.MaxIterationsFoopsi;
-inference_th = inputs.Results.InferenceThreshold;
-inference_same_th = inputs.Results.SameInferenceThreshold;
+inference_th_b = inputs.Results.InferenceThresholdB;
 neurons = inputs.Results.Neurons;
 get_xsembles = inputs.Results.GetXsembles;
 
 %% Get files
+warning('off','verbose')
+warning('off','backtrace')
 if isempty(file_path)
     % Open dialog box
     [file_name,path_name] = uigetfile('*.tif;*.avi','Select one or more videos','Multiselect','on');
     if length(path_name)==1
         warning('No file selected!')
         return;
+    end
+
+    if iscell(file_name)
+        name = [];
+        for i = 1:length(file_name)
+            name = [name file_name{i}(1:end-4)];
+        end
+    else
+        name = file_name;
     end
 else
     [path_name,name,ext] = fileparts(file_path);
@@ -101,10 +110,10 @@ if isempty(output_path)
     output_path = path_name;
 end
 
-if isfile('log_xsembles_2p.txt')
-    delete('log_xsembles_2p.txt')
+if isfile([output_path name '_log_Xsembles2P.txt'])
+    delete([output_path name '_log_Xsembles2P.txt'])
 end
-diary('log_xsembles_2p.txt')
+diary([output_path name '_log_Xsembles2P.txt'])
 
 disp('---Xsembles 2P---')
 disp(datetime)
@@ -366,7 +375,7 @@ tic; disp('Generating neuropil mask...')
 neuropil = Get_Neuropil_Mask(data.Neurons,[height width]);
 t=toc; disp(['   Done (' num2str(t) ' seconds)'])
 
-tic; disp('Creating cell and neuropil masks...')
+tic; disp('Creating neuronal and neuropil masks...')
 neuropil_radius = 10*neuron_radius;
 [cellMasks,auraMasks,cellWMasks] = Get_Neuronal_Masks(data.Neurons,neuropil,...
     neuropil_radius,[height width]);
@@ -461,15 +470,21 @@ data.Transients.ThresholdPSNR = thPSNRdB;
 n_neurons = length(data.Neurons);
 tic; fprintf('Getting raster from %i neurons...\n',n_neurons)
 
-[raster,inference_thresholded] = Get_Raster_From_Inference(...
-    data.Transients.Inference,inference_same_th,inference_th);
+% [raster,inference_thresholded,inference_th,inference_th_b] = Get_Raster_From_Inference(...
+%     data.Transients.Inference,data.Transients.PSNRdB,inference_th_b);
+[raster,inference_thresholded,inference_th,inference_th_b] = Get_Raster_From_Inference(...
+    data.Transients.Inference,data.Transients.PSNRdB,inference_th_b);
 t=toc; disp(['   Done (' num2str(t) ' seconds)'])
 
 % Write data
 data.Transients.Raster = raster;
 data.Transients.InferenceTh = inference_thresholded;
-data.Transients.SameThreshold = inference_same_th;
+% data.Transients.SameThreshold = inference_same_th;
+% data.Transients.Threshold = inference_th;
+data.Transients.SameThreshold = false;
 data.Transients.Threshold = inference_th;
+data.Transients.ThresholdLinearModelB = inference_th_b;
+data.Transients.InferenceThresholdMethod = 'Inference threshold proportionally to PSNRdB';
 
 %% Remove inactive neurons
 % Do not remove neurons if given ROIs
@@ -508,12 +523,13 @@ if ~data.ROIs.GivenROIs
 end
 
 %% Write log
-data.Log = readlines('log_xsembles_2p.txt');
-delete('log_xsembles_2p.txt')
+disp(datetime)
+data.Log = readlines([output_path name '_log_Xsembles2P.txt']);
 
 %% Get ensembles
 if get_xsembles
-    data.Analysis = Get_Xsembles(data.Transients.Raster);
+    %data.Analysis = Get_Xsembles(data.Transients.Raster,[],[output_path name]);
+    data.Analysis = Get_Xsembles(data.Transients.Raster,'FileLog',[output_path name]);
 end
 
 %% Save data in file
@@ -534,7 +550,7 @@ assignin('base',['data_' data.Movie.DataName],data);
 eval(['data_' data.Movie.DataName '=data;']);
 
 % Save data
-save([output_path  data.Movie.SessionName],['data_' data.Movie.DataName],'-v7.3')
+save([output_path data.Movie.SessionName],['data_' data.Movie.DataName],'-v7.3')
     
 t = toc; disp(['   Done (' num2str(t) ' seconds)'])
 

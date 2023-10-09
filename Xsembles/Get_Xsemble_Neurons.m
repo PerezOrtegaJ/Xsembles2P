@@ -6,7 +6,9 @@ function [structures,neurons,ensemble_vectors,ensemble_indices]...
 %   = Get_Xsemble_Neurons(raster,vector_id,sequence)
 %
 % By Jesus Perez-Ortega, Aug 2022
-% Modified Mar 2023 (EPI)
+% Modified Mar 2023 (EPI added)
+% Modified Sep 2023 (Trinary added, ensemble replaced by onsemble)
+
 
 % Get number of ensembles
 ensembles = length(unique(sequence));
@@ -32,13 +34,13 @@ for i = 1:ensembles
     [significantly_active,belongingness,~,p,significantly_silence] = ...
         Get_Evoked_Neurons(raster,ensemble_activity);
 
-    % Get ensemble belonging index
+    % Get ensemble participation index
     EPI = Get_EPI(raster,ensemble_activity);
 
     % Identify and sort significantly active neurons
     neurons_i = find(significantly_active);
     [~,id] = sort(belongingness(neurons_i),'descend');
-    ensemble_neurons{i} = neurons_i(id);
+    onsemble_neurons{i} = neurons_i(id);
     
     % Identify and sort significantly silent neurons
     neurons_i = find(significantly_silence);
@@ -53,13 +55,17 @@ for i = 1:ensembles
     structure_p(i,:) = p;
 end
 
+structure_trinary = double(structure_activated);
+structure_trinary(structure_silenced) = -1;
+
 % Set structures
 structures.Activated = structure_activated;
 structures.Silenced = structure_silenced;
+structures.Trinary = structure_trinary;
 structures.BelongingnessTest = structure_belongingness;
 structures.EPI = structure_EPI;
 structures.P = structure_p;
 
 % Set neurons
-neurons.Ensemble = ensemble_neurons;
+neurons.Onsemble = onsemble_neurons;
 neurons.Offsemble = offsemble_neurons;

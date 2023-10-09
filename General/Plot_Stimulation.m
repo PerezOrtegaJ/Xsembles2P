@@ -25,10 +25,21 @@ stims = setdiff(unique(stimuli),0);
 n_stims = length(stims);
 legend_text = {};
 if ~isempty(stims)
-    for i = 1:n_stims
-        stimulus = stimuli==stims(i);
-        Plot_Area(rescale(stimulus,0,amplitude,'InputMin',0),0,colors(stims(i),:),0.5); hold on
-        legend_text = [legend_text {stim_text(stims(i))}];
+    if n_stims>8
+        stimuli(isnan(stimuli)) = -1;
+        %stimuli(stimuli>180) = stimuli(stimuli>180)-180;
+        colors = [1 1 1; jet(nnz(unique(stimuli)>0)); jet(nnz(unique(stimuli)>0))];
+        imagesc(stimuli)
+        colormap(gca,colors)
+        %Plot_Area(stimuli,0,[0 0 0],0.5); hold on
+        %ylim([0 360])
+        legend_text = {'stimuli'};
+    else
+        for i = 1:n_stims
+            stimulus = stimuli==stims(i);
+            Plot_Area(rescale(stimulus,0,amplitude,'InputMin',0),0,colors(stims(i),:),0.5); hold on
+            legend_text = [legend_text {stim_text(stims(i))}];
+        end
     end
     xlim([0 length(stimuli)])
 end

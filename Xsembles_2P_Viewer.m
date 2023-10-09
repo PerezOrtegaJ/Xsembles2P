@@ -468,7 +468,6 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             end
 
             HighlightEnsembleDropDownValueChanged(app)
-
         end
 
         % Button pushed function: PlotRasterButton
@@ -577,11 +576,13 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 return
             end
 
-            spirals = true;
-
             if strcmp(app.HighlightEnsembleDropDown.Value,'no')
-                Write_XY_Prairie_Stim(data.XY.All,spirals,'',...
-                    [data.Movie.DataName ' - all neurons'])
+                % Spirals
+                Write_XY_Prairie_Stim(data.XY.All,true,'',...
+                    [data.Movie.DataName ' - all neurons - spiral'])
+                % Point
+                Write_XY_Prairie_Stim(data.XY.All,false,'',...
+                    [data.Movie.DataName ' - all neurons - point'])
             else
             
                 plot_ensemble = app.PlotEnsembleCheckBox.Value;
@@ -601,16 +602,22 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
     
                 % Set spiral marker points
                 if plot_ensemble
-                    Write_XY_Prairie_Stim(data.XY.All(ensemble_id,:),spirals,'',...
-                        [data.Movie.DataName ' - ensemble ' num2str(ensemble_number)])
+                    Write_XY_Prairie_Stim(data.XY.All(ensemble_id,:),true,'',...
+                        [data.Movie.DataName ' - ensemble ' num2str(ensemble_number) ' spiral'])
+                    Write_XY_Prairie_Stim(data.XY.All(ensemble_id,:),false,'',...
+                        [data.Movie.DataName ' - ensemble ' num2str(ensemble_number) ' point'])
                 end
                 if plot_offsemble
-                    Write_XY_Prairie_Stim(data.XY.All(offsemble_id,:),spirals,'',...
-                        [data.Movie.DataName ' - offsemble ' num2str(ensemble_number)])
+                    Write_XY_Prairie_Stim(data.XY.All(offsemble_id,:),true,'',...
+                        [data.Movie.DataName ' - offsemble ' num2str(ensemble_number) ' spiral'])
+                    Write_XY_Prairie_Stim(data.XY.All(offsemble_id,:),false,'',...
+                        [data.Movie.DataName ' - offsemble ' num2str(ensemble_number) ' point'])
                 end
                 if plot_nonxsembles
-                    Write_XY_Prairie_Stim(data.XY.All(nonxsemble_id,:),spirals,'',...
-                        [data.Movie.DataName ' - nonxsemble ' num2str(ensemble_number)])
+                    Write_XY_Prairie_Stim(data.XY.All(nonxsemble_id,:),true,'',...
+                        [data.Movie.DataName ' - nonxsemble ' num2str(ensemble_number) ' spiral'])
+                    Write_XY_Prairie_Stim(data.XY.All(nonxsemble_id,:),false,'',...
+                        [data.Movie.DataName ' - nonxsemble ' num2str(ensemble_number) ' point'])
                 end
             end
         end
@@ -1019,6 +1026,10 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 case 'all neurons'
                     % Get the type of optogenetic activation
                     xy_stim = data.Optogenetics.XY;
+
+                    if data.Movie.Width>256
+                        xy_stim(:,1) = xy_stim(:,1)+256*2;
+                    end
                     radius = data.ROIs.NeuronRadius;
                     opto = data.Optogenetics.Stimulation;
                     laser = opto.*laser;
@@ -1026,6 +1037,28 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     neuron_signals = data.Transients.Filtered;
                     max_signal = max(neuron_signals,[],'all');
                     
+                    % Provisional ------
+                    % Plot
+                    h_figure = Set_Figure([data.Movie.DataName ' - Raw signal optogenetic activation'],...
+                        [0 0 1200 500]);
+                    uicontrol(h_figure,'style','text','units','normalized',...
+                    'position',[0 0.95 1 0.05],'BackgroundColor',[1 1 1],...
+                    'String',data.Movie.DataName);
+    
+                    n_stim_neurons = size(xy_stim,1);
+                    colors = Read_Colors(n_stim_neurons);
+                    [id_neuron,id_xy] = Find_Neurons_By_XY(data.Neurons,xy_stim,radius);
+                    Plot_Transients(data.Transients.Raw(id_neuron,:),'separated',data.Movie.FPS,colors(id_xy,:))
+                    for i = 1:n_stim_neurons
+                        id_neuron = Find_Neurons_By_XY(data.Neurons,xy_stim(i,:),radius);
+                        if isempty(id_neuron)
+                            continue
+                        end
+                        opto = data.Optogenetics.Stimulation==i;
+                        Plot_Area((opto>0)*max(get(gca,'ylim')),0,colors(i,:),1); hold on
+                    end
+                    % Provisional ------
+
                     % Plot
                     h_figure = Set_Figure([data.Movie.DataName ' - Optogenetic stimulation'],...
                         [0 0 1200 500]);
@@ -1042,6 +1075,10 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                         % Get single neurons trials
                         id_neuron = Find_Neurons_By_XY(data.Neurons,xy_stim(i,:),radius);
                         
+                        if isempty(id_neuron)
+                            continue
+                        end
+
                         % Get trial responses from a stimulated neuron
                         trials = Get_Trial_Responses(neuron_signals(id_neuron,:),...
                             single_laser,pre,post);
@@ -1192,16 +1229,17 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 stimuli = data.VoltageRecording.Stimuli;
                 stimulus_types = unique(stimuli);
                 stimulus_types = setdiff(stimulus_types,0);
-                arrows = '→↗↑↖←↙↓↘';
- 
-                if length(stimulus_types)>1
-                    data_strings{end+1} = 'all stimuli';
-                end
+                n_stim = length(stimulus_types);
 
-                for i = stimulus_types
-                    data_strings{end+1} = arrows(i);
-                end
-                
+                if n_stim>1
+                    data_strings{end+1} = 'all stimuli';
+                    if stimulus_types<=8
+                        arrows = '→↗↑↖←↙↓↘';
+                        for i = stimulus_types
+                            data_strings{end+1} = arrows(i);
+                        end
+                    end
+                end                
             end
             if isfield(data.VoltageRecording,'Laser')
                 laser = data.VoltageRecording.Laser>0;
@@ -1235,7 +1273,11 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
 
             if isfield(data,'Optogenetics')
                 Set_Figure([data.Movie.DataName ' - Optogenetics'],[0 0 500 500])
-                Plot_Neurons_Stimulated(data)
+                if data.Movie.Width>256
+                    Plot_Neurons_Stimulated(data,256*2)
+                else
+                    Plot_Neurons_Stimulated(data)
+                end
                 title(strrep(data.Movie.DataName,'_','-'))
             else
                 disp('There are no optogenetic data loaded!')
@@ -1245,7 +1287,9 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         % Button pushed function: FileButton
         function FileButtonPushed(app, event)
             [file_name,path_name] = uigetfile('*.tif;*.avi','Select one video');
-            app.FileEditField.Value = [path_name file_name];
+            if file_name
+                app.FileEditField.Value = [path_name file_name];
+            end
         end
 
         % Drop down opening function: SortNeuronsDropDown

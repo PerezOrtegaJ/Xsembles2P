@@ -7,7 +7,7 @@ function vectors = Get_Peak_Vectors(data,peak_indices,vector_method,connectivity
 % Inputs
 % data                  = data as C x F matrix (C = #cells, F = #frames)
 % peak_indices              = Fx1 vector containing the peaks indexes
-% vector_method         = choose the method for build the vetor ('sum','average','binary','network')
+% vector_method         = choose the method for build the vetor ('binary','sum','average','network')
 % connectivity_method   = connectivity method is used in case of
 %                         'Vector_method' is 'network' ('coactivity','jaccard','pearson','kendall','spearman')
 % bin_network           = bin is used in case of 'Vector_method' is 'network'
@@ -33,17 +33,17 @@ peaks = max(peak_indices);
 if peaks
     C = size(data,1);
     switch vector_method
-        case 'sum'
-            vectors = zeros(peaks,C);
-            for i = 1:peaks
-                data_peak_i = data(:,peak_indices==i);
-                vectors(i,:) = sum(data_peak_i,2);
-            end
         case 'binary'
             vectors = zeros(peaks,C);
             for i = 1:peaks
                 data_peak_i = data(:,peak_indices==i);
                 vectors(i,:) = sum(data_peak_i,2)>0;
+            end
+        case 'sum'
+            vectors = zeros(peaks,C);
+            for i = 1:peaks
+                data_peak_i = data(:,peak_indices==i);
+                vectors(i,:) = sum(data_peak_i,2);
             end
         case 'average'
             vectors = zeros(peaks,C);

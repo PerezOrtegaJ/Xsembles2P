@@ -16,9 +16,7 @@ end
 filtered = data.Transients.Filtered(neuron_id,:);
 max_filtered = max(data.Transients.Filtered(:));
 
-if isfield(data.Transients,'Inference')
-    raster = data.Transients.Inference(neuron_id,:)>0.05;
-elseif isfield(data.Transients,'Raster')
+if isfield(data.Transients,'Raster')
     raster = data.Transients.Raster(neuron_id,:);
 else
     raster = [];

@@ -23,7 +23,7 @@ h.figure = Set_Figure(['Selecting PSNR threshold: ' num2str(th) ' (' num2str(n_n
 h.image = imshow(image,'InitialMagnification',200);
 
 h.th_scrollbar = uicontrol(h.figure,'style','slider','units','normalized',...
-    'position',[0 0.97 1 0.03],'SliderStep',double([1/h.th_max 10/h.th_max]),'Value',th/h.th_max);
+    'position',[0 0.97 1 0.03],'SliderStep',double([1/h.th_max 5/h.th_max]),'Value',th/h.th_max);
 h.select_button = uicontrol(h.figure,'style','pushbutton','units','normalized',...
     'position',[0 0 1 0.1],'String','Select current threshold');
 
@@ -41,7 +41,7 @@ end
 th = round(h.th_scrollbar.Value*h.th_max);
 
     function Change_Threshold_Callback(data,h)
-        th = floor(h.th_scrollbar.Value*h.th_max);
+        th = round(h.th_scrollbar.Value*h.th_max);
         h.th_scrollbar.Value = th/h.th_max;
 
         % Get number of neurons above threshold

@@ -1,10 +1,10 @@
-function voltage_recording = Read_Voltage_Recording(file,period,samples)
+function voltage_recording = Read_Voltage_Recording(file,frame_period,samples)
 % Read voltage recording from prairie. It works for names of recordings of
 % stimuli, laser and locomotion
 %
-%       voltage_recording = Read_Voltage_Recording(file,period,samples)
+%       voltage_recording = Read_Voltage_Recording(file,frame_period,samples)
 %
-%       period = period of each frame
+%       frame_period = period of each frame
 %       samples = samples of the imaging
 %
 % See also Join_Voltage_Recordings
@@ -14,6 +14,7 @@ function voltage_recording = Read_Voltage_Recording(file,period,samples)
 % Modified Jul 2021
 % Modified Sep 2021
 % Modified Feb 2022 - interpolation
+% Modified Apr 2023 - stimuli>8 orientations
 
 % Disable warning because the header of the time is "Time (ms)"
 warning off
@@ -21,31 +22,30 @@ dataTable = readtable(file);
 warning on
 
 % Get sample rate
-msPeriod = diff(dataTable.Time_ms_(1:2));
-sample_rate_voltage = 1000/msPeriod;
-disp(['   Voltage recording at ' num2str(sample_rate_voltage) ' Hz'])
+voltage_period = diff(dataTable.Time_ms_(1:2))/1000;
+voltage_sample_rate = 1/voltage_period;
+disp(['   Voltage recording at ' num2str(voltage_sample_rate) ' Hz'])
 
 % Visual stimuli
 if ismember('stimuli', dataTable.Properties.VariableNames)
-    stimuli = round(dataTable.stimuli*2);
 
+    % Usually: 0.5 V represents 0 deg, 1 V represents 45 deg, and so on... 
+    stimuli = round(dataTable.stimuli*2);
+    
     % if sample frequencies are the same
-    if abs(period*1000-msPeriod)<1
+    if abs(frame_period-voltage_period)<0.001
         stimuli = stimuli(1:samples);
     else
         % interpolate
-        limit = floor(period*samples*1000);
-        t = 0:limit;
-        stim = stimuli(1:length(t));
-        step = period*1000;
-        t2 = 0:step:limit;
-        t2 = t2(1:samples);
-        stimuli = round(interp1(t,stim,t2));
-    end
+        stimuli = round(Interpolate(stimuli,voltage_period,frame_period,samples));
 
-    % this was used previously when images were taken at ms round (vg 81 ms period)
-    %stimuli = downsample(round(stimuli),round(period*sample_rate_voltage));
-    %stimuli = stimuli(1:samples);
+        % If more than usual 8 directions
+        if length(unique(stimuli))>9 || nnz(unique(stimuli)>8)
+            stimuli = round((dataTable.stimuli-0.5)*90);
+            stimuli = round(Interpolate(stimuli,voltage_period,frame_period,samples));
+            stimuli(stimuli<0) = nan;
+        end
+    end
 
     voltage_recording.Stimuli = stimuli;
     disp('   Visual stimulation loaded')
@@ -59,7 +59,6 @@ if ismember('frequency', dataTable.Properties.VariableNames)
     disp('   Frequency loaded')
 end
 
-
 % Locomotion from wheel recording
 if ismember('locomotion', dataTable.Properties.VariableNames)
     % Get locomotion in cm/s
@@ -69,23 +68,11 @@ if ismember('locomotion', dataTable.Properties.VariableNames)
     max_locomotion = max([locomotion; 4.5]);
     range = max_locomotion-min_locomotion;
     angles = unwrap((locomotion-min_locomotion)/range*2*pi);
-    velocity = diff(angles)*diameter/pi*sample_rate_voltage;
+    velocity = diff(angles)*diameter/pi*voltage_sample_rate;
     velocity = smooth(velocity,100);
 
     % interpolate
-    limit = round(period*samples*1000);
-    t = 0:limit;
-    v = velocity(1:length(t));
-    step = period*1000;
-    t2 = 0:step:limit;
-    t2 = t2(1:samples);
-    locomotion = interp1(t,v,t2);
-
-    % previous version
-    %locomotion = downsample(velocity,round(period*sample_rate_voltage));
-    %locomotion = locomotion(1:samples);
-
-    locomotion = abs(locomotion);
+    locomotion = abs(Interpolate(velocity,voltage_period,frame_period,samples));
     voltage_recording.Locomotion = locomotion;
     disp('   Locomotion loaded')
 end
@@ -100,13 +87,14 @@ end
 
 % Laser stimulation
 if ismember('laser', dataTable.Properties.VariableNames)
-    laser = Get_Stimulated_Frames(dataTable.laser,samples,period*sample_rate_voltage,msPeriod);
+    laser = Get_Stimulated_Frames(dataTable.laser,samples,frame_period*voltage_sample_rate,...
+        voltage_period*1000);
     voltage_recording.Laser = laser;
     disp('   Laser stimulation loaded')
 end
 
 % Add file data
 voltage_recording.File = file;
-voltage_recording.RecordingSampleRate = sample_rate_voltage;
-voltage_recording.DownsampledTo = 1/period;
+voltage_recording.RecordingSampleRate = voltage_sample_rate;
+voltage_recording.DownsampledTo = 1/frame_period;
 voltage_recording.Method = 'Interpolation';

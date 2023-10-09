@@ -47,7 +47,7 @@ for i = 1:n_ensembles
     end
 end
 xlabel('ensemble #')
-ylabel('activation average')
+ylabel('similarity average')
 xlim([0.5 n_ensembles+0.5])
 ylim([0 max(ensemble_similarity)+0.1])
 set(gca,'xtick',1:n_ensembles)

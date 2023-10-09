@@ -5,8 +5,7 @@ function [clusters_recommended,indices,avg_indices,sem_indices] =...
 %       [clusters_recommended,indices,avg_indices,sem_indices] =...
 %   Contrast_Test(tree,similarity,clustering_range,method,exclude)
 %
-%       default: clustering_range = 2:30; method = 'max' (or 'firstpeak', 'bigincrease',
-%                'maxsem', 'firstpeaksem'); exclude = false
+%       default: clustering_range = 2:30; method = 'localmax' (or 'max'); exclude = false
 %
 % Inputs:
 %       tree = hierarchical cluster tree
@@ -18,17 +17,17 @@ function [clusters_recommended,indices,avg_indices,sem_indices] =...
 % Outputs:
 %       clusters_recommended = recommended number of clusters
 %       indices = contrast indices of the clustering range
-%      
 %
 % By Jesus Perez-Ortega, March 2022
+% Modified Sep 2023 (name changed to 'localmax')
 
 switch nargin
     case 2
         clustering_range = 2:30;
-        method = 'max';
+        method = 'localmax';
         exclude = false;
     case 3
-        method = 'max';
+        method = 'localmax';
         exclude = false;
     case 4
         exclude = false;
@@ -50,7 +49,7 @@ end
 indices = avg_indices-sem_indices;
 
 switch method
-    case 'max'
+    case 'localmax'
         % Select the maximum index
         id = Select_Best_Index(indices,'max');
         
@@ -72,8 +71,7 @@ switch method
             % find first valley of the first derivative
             id = Select_Best_Index(max(diff(avg_indices))-diff(avg_indices),'firstpeak')+1;
         end
-
-    otherwise
+    case 'max'
         % Select the best index
         id = Select_Best_Index(indices,method);
 end

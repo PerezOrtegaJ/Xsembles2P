@@ -7,9 +7,10 @@ function adjacency = Get_Adjacency_From_Raster(raster,connectivity_method)
 %
 % Negative numbers and NaNs are set to 0s
 %
-% Perez-Ortega Jesus - march 2018
-% Modified - may 2018
-% Modified - june 2018
+% Perez-Ortega Jesus, Mar 2018
+% Modified, May 2018
+% Modified, Jun 2018
+% Modified, Jun 2023
 
 if nargin==1
     connectivity_method = 'coactivity';
@@ -19,8 +20,13 @@ cells=size(raster,1);
 switch(connectivity_method)
     case 'coactivity'
         %warning('Data is set to binary to obtain the adjacency matrix.')
-        raster=double(raster>0);
-        adjacency=raster*raster'.*(1-eye(cells));            
+        %raster = double(raster>0);
+        %adjacency = raster*raster'.*(1-eye(cells));
+        raster = single(raster);
+        raster_t = raster';
+        adjacency = raster*raster_t;
+        diagonal_id = 1:length(adjacency)+1:numel(adjacency);
+        adjacency(diagonal_id) = 0;
     case 'jaccard'
         %warning('Data is set to binary to obtain the adjacency matrix.')
         raster=double(raster>0);

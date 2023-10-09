@@ -13,6 +13,7 @@ function colors_structure = Plot_Ensemble_Structure(structure,colors,new_figure,
 % Modified Oct 2021
 % Modified Jan 2022 (name changed)
 % Modified Oct 2022 (ploting neurons)
+% Modified Oct 2023 (red blue colors)
 
 switch nargin
     case 1
@@ -29,6 +30,12 @@ switch nargin
         fade = false;
     case 4
         fade = false;
+end
+
+if strcmp(colors,'red-blue')
+    redblue = true;
+else
+    redblue = false;
 end
 
 % Get number of neurons and ensembles
@@ -77,9 +84,24 @@ for i = 1:n_ensembles
             end
         end
     else
-        neurons = find(structure(:,i));
+        % Plot onsemble neurons
+        neurons = find(structure(:,i)==1)';
         if ~isempty(neurons)
-            plot(i,neurons,'.','color',colors(i,:),'MarkerSize',node_size/3); hold on
+            if redblue
+                plot(i,neurons,'.','color',[0.91 0.33 0.33],'MarkerSize',node_size/3); hold on
+            else
+                plot(i,neurons,'.','color',colors(i,:),'MarkerSize',node_size/3); hold on
+            end
+        end
+        
+        % Plot offsemble neurons
+        neurons = find(structure(:,i)==-1)';
+        if ~isempty(neurons)
+            if redblue
+                plot(i,neurons,'.','color',[0.40 0.63 0.85],'MarkerSize',node_size/3); hold on
+            else
+                plot(i,neurons,'.','color',Darken_Colors(colors(i,:)),'MarkerSize',node_size/3); hold on
+            end
         end
     end
 end
@@ -87,7 +109,7 @@ end
 if n_ensembles==1
     xlim([0.5 1.5])
 else
-    xlim([1 n_ensembles])
+    xlim([0.5 n_ensembles+0.5])
 end
 
 ylim([1 n_neurons])
