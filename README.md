@@ -1,5 +1,5 @@
 # Xsembles2P
-**_Xsembles2P_** is a faster<sup>†</sup> tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify xsembles (ensembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
+**_Xsembles2P_** is a faster<sup>†</sup> tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify ensembles (onsembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
 
 The algorithm performs the following computations:
 
@@ -56,7 +56,7 @@ Xsembles_2P('','SamplingPeriod',0.1,'NeuronRadius',4)
 - `InferenceThreshold`, threshold of spike inference to buil a binary raster (default is `0`).
 - `SameInferenceThreshold`, flag to apply the same threshold to all neurons (default is `true`).
 - `Neurons`, structure variable with neuron ROIs (when ROIs are given the program will not find new ones, default is `[]`).
-- `GetXsembles`, flag to perform the extaction of ensembles (and offsembles) (default is `true`).
+- `GetXsembles`, flag to perform the extaction of ensembles (onsembles and offsembles) (default is `true`).
 
 # Xsembles2P - Viewer
 **_Xsembles2P - Viewer_** is a friendly graphical user interface for running `Xsembles_2P.m` and also for plotting the results generated. The MATLAB function to use it is `Xsembles_2P_Viewer.m`.
