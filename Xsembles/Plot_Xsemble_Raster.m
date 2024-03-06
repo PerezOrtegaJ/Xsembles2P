@@ -21,7 +21,7 @@ if nargin<4
 end
 
 % Sorting vectors ('ori' selected for oriented stimuli)
-[vector_id_sorted,neuron_id_sorted,ensemble_id] = Vector_and_Neuron_ID(data,'ori');
+[vector_id_sorted,neuron_id_sorted,ensemble_id] = Vector_and_Neuron_ID(data,'none');
 
 if length(sort_neurons)==1
     if sort_neurons
