@@ -1,5 +1,5 @@
 # Xsembles2P
-**_Xsembles2P_** is a faster<sup>†</sup> tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify xsembles (ensembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
+**_Xsembles2P_** is a faster<sup>†</sup> tool to analyze two-photon calcium imaging videos to extract neuronal activity and identify ensembles (onsembles and offsembles).  The MATLAB function to use it is `Xsembles_2P.m`.
 
 The algorithm performs the following computations:
 
@@ -19,7 +19,9 @@ The algorithm performs the following computations:
 <sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an onsemble (active neurons) and its associated offsemble (silenced neurons).
 
 ## Citation
-If you use **_Xsembles2P_**, please cite our [paper](https://elifesciences.org/articles/64449):
+If you use **_Xsembles2P_**, please cite one of our papers [NatComms](https://www.nature.com/articles/s41467-024-47515-x) or [eLife](https://elifesciences.org/articles/64449):
+> Pérez-Ortega, J., Akrouh, A. & Yuste, R. Stimulus encoding by specific inactivation of cortical neurons. Nat Commun 15, 3192 (2024). doi: 10.1038/s41467-024-47515-x
+
 > Pérez-Ortega J, Alejandre-García T, Yuste R. 2021. Long-term stability of cortical ensembles. Elife 10:1–19. doi:10.7554/eLife.64449
 
 ## How to run Xsembles2P
@@ -56,7 +58,7 @@ Xsembles_2P('','SamplingPeriod',0.1,'NeuronRadius',4)
 - `InferenceThreshold`, threshold of spike inference to buil a binary raster (default is `0`).
 - `SameInferenceThreshold`, flag to apply the same threshold to all neurons (default is `true`).
 - `Neurons`, structure variable with neuron ROIs (when ROIs are given the program will not find new ones, default is `[]`).
-- `GetXsembles`, flag to perform the extaction of ensembles (and offsembles) (default is `true`).
+- `GetXsembles`, flag to perform the extaction of ensembles (onsembles and offsembles) (default is `true`).
 
 # Xsembles2P - Viewer
 **_Xsembles2P - Viewer_** is a friendly graphical user interface for running `Xsembles_2P.m` and also for plotting the results generated. The MATLAB function to use it is `Xsembles_2P_Viewer.m`.
