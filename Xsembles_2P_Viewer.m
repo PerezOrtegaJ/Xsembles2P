@@ -42,9 +42,9 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         GetNeuronsButton               matlab.ui.control.Button
         SelectSignalsDropDown          matlab.ui.control.DropDown
         PlotSignalsButton              matlab.ui.control.Button
-        PlotNonXsembleCheckBox         matlab.ui.control.CheckBox
+        PlotNonparticipantCheckBox         matlab.ui.control.CheckBox
         PlotOffsembleCheckBox          matlab.ui.control.CheckBox
-        PlotEnsembleCheckBox           matlab.ui.control.CheckBox
+        PlotOnsembleCheckBox           matlab.ui.control.CheckBox
         RasterPanel                    matlab.ui.container.Panel
         SortNeuronsDropDown            matlab.ui.control.DropDown
         ReplayActivityButton           matlab.ui.control.Button
@@ -139,48 +139,48 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 options_title = ' (all neurons)';
                 legend_text = {'all neurons'};
             else
-                plot_ensemble = app.PlotEnsembleCheckBox.Value;
+                plot_onsemble = app.PlotOnsembleCheckBox.Value;
                 plot_offsemble = app.PlotOffsembleCheckBox.Value;
-                plot_nonxsembles = app.PlotNonXsembleCheckBox.Value;
+                plot_nonparticipant = app.PlotNonparticipantCheckBox.Value;
     
-                if ~plot_ensemble && ~plot_offsemble && ~plot_nonxsembles
+                if ~plot_onsemble && ~plot_offsemble && ~plot_nonparticipant
                     return
                 end
 
                 % Selected ensemble neurons
                 ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
-                ensemble_id = data.Analysis.Ensembles.EnsembleNeurons{ensemble_number};
+                onsemble_id = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
                 offsemble_id = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
-                nonxsemble_id = setdiff(1:data.Analysis.Neurons,ensemble_id);
-                nonxsemble_id = setdiff(nonxsemble_id,offsemble_id);
-                xsemble_color = Get_Color(ensemble_number,'jp');
+                nonparticipant_id = setdiff(1:data.Analysis.Neurons,onsemble_id);
+                nonparticipant_id = setdiff(nonparticipant_id,offsemble_id);
+                ensemble_color = Get_Color(ensemble_number,'jp');
         
                 % Get coordinates 
-                xy_ensemble = data.XY.All(ensemble_id,:);
+                xy_onsemble = data.XY.All(onsemble_id,:);
                 xy_offsemble = data.XY.All(offsemble_id,:);
-                xy_nonxsemble = data.XY.All(nonxsemble_id,:);
+                xy_nonparticipant = data.XY.All(nonparticipant_id,:);
 
-                if plot_ensemble && plot_offsemble && plot_nonxsembles
-                    options_title = [' (ensemble, offsemble, and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'nonxsemble neurons','offsemble neurons','ensemble neurons'};
-                elseif plot_ensemble && plot_offsemble
+                if plot_onsemble && plot_offsemble && plot_nonparticipant
+                    options_title = [' (onsemble, offsemble, and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
+                    legend_text = {'nonparticipant neurons','offsemble neurons','onsemble neurons'};
+                elseif plot_onsemble && plot_offsemble
                     options_title = [' (ensemble and offsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'offsemble neurons','ensemble neurons'};
-                elseif plot_ensemble && plot_nonxsembles
-                    options_title = [' (ensemble and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'nonxsemble neurons','ensemble neurons'};
-                elseif plot_ensemble
-                    options_title = [' (ensemble ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'ensemble neurons'};
-                elseif plot_offsemble && plot_nonxsembles
-                    options_title = [' (offsemble and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'nonxsemble neurons','offsemble neurons'};
+                    legend_text = {'offsemble neurons','onsemble neurons'};
+                elseif plot_onsemble && plot_nonparticipant
+                    options_title = [' (ensemble and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
+                    legend_text = {'nonparticipant neurons','onsemble neurons'};
+                elseif plot_onsemble
+                    options_title = [' (onsemble ' app.HighlightEnsembleDropDown.Value ')'];
+                    legend_text = {'onsemble neurons'};
+                elseif plot_offsemble && plot_nonparticipant
+                    options_title = [' (offsemble and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
+                    legend_text = {'nonparticipant neurons','offsemble neurons'};
                 elseif plot_offsemble
                     options_title = [' (offsemble ' app.HighlightEnsembleDropDown.Value ')'];
                     legend_text = {'offsemble neurons'};
-                elseif plot_nonxsembles
-                    options_title = [' (nonxsemble neurons ' app.HighlightEnsembleDropDown.Value ')'];
-                    legend_text = {'nonxsemble neurons'};
+                elseif plot_nonparticipant
+                    options_title = [' (nonparticipant neurons ' app.HighlightEnsembleDropDown.Value ')'];
+                    legend_text = {'nonparticipant neurons'};
                 end
             end
 
@@ -193,17 +193,17 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 plot(data.XY.All(:,1),data.XY.All(:,2),'.','Color',[0.9 0.9 0.9],...
                         'MarkerSize',30); hold on
             else
-                if plot_nonxsembles
-                    plot(xy_nonxsemble(:,1),xy_nonxsemble(:,2),'.','Color',[0.9 0.9 0.9],...
+                if plot_nonparticipant
+                    plot(xy_nonparticipant(:,1),xy_nonparticipant(:,2),'.','Color',[0.9 0.9 0.9],...
                         'MarkerSize',30); hold on
                 end
                 if plot_offsemble
                     plot(xy_offsemble(:,1),xy_offsemble(:,2),'.','Color',...
-                        Attenuate_Colors(xsemble_color),'MarkerSize',30); hold on
+                        Attenuate_Colors(ensemble_color),'MarkerSize',30); hold on
                 end
-                if plot_ensemble
-                    plot(xy_ensemble(:,1),xy_ensemble(:,2),'.','Color',...
-                        xsemble_color,'MarkerSize',30); hold on
+                if plot_onsemble
+                    plot(xy_onsemble(:,1),xy_onsemble(:,2),'.','Color',...
+                        ensemble_color,'MarkerSize',30); hold on
                 end
             end
             title(strrep([data.Movie.DataName ' - Xsembles' options_title],'_','-'))
@@ -232,64 +232,64 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     data.Movie.Height,brightness,0,0);
                 options_title = '';
             else
-                plot_ensemble = app.PlotEnsembleCheckBox.Value;
+                plot_onsemble = app.PlotOnsembleCheckBox.Value;
                 plot_offsemble = app.PlotOffsembleCheckBox.Value;
-                plot_nonxsembles = app.PlotNonXsembleCheckBox.Value;
+                plot_nonparticipant = app.PlotNonparticipantCheckBox.Value;
     
-                if ~plot_ensemble && ~plot_offsemble && ~plot_nonxsembles
+                if ~plot_onsemble && ~plot_offsemble && ~plot_nonparticipant
                     return
                 end
 
                 % Set mask highlighting the selected ensemble
                 ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
-                ensemble_hsv = rgb2hsv(Get_Color(ensemble_number,'jp'));
+                onsemble_hsv = rgb2hsv(Get_Color(ensemble_number,'jp'));
                 offsemble_hsv = rgb2hsv(Attenuate_Colors(Get_Color(ensemble_number,'jp')));
 
                 % Get ids
-                ensemble_id = data.Analysis.Ensembles.EnsembleNeurons{ensemble_number};
+                onsemble_id = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
                 offsemble_id = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
-                nonxsemble_id = setdiff(1:data.Analysis.Neurons,ensemble_id);
-                nonxsemble_id = setdiff(nonxsemble_id,offsemble_id);
+                nonparticipant_id = setdiff(1:data.Analysis.Neurons,onsemble_id);
+                nonparticipant_id = setdiff(nonparticipant_id,offsemble_id);
 
                 % Initialize values
                 hues = zeros(1,data.Analysis.Neurons);
                 saturation = zeros(1,data.Analysis.Neurons);
 
-                hues(ensemble_id) = ensemble_hsv(1);
-                saturation(ensemble_id) = ensemble_hsv(2);
+                hues(onsemble_id) = onsemble_hsv(1);
+                saturation(onsemble_id) = onsemble_hsv(2);
                 hues(offsemble_id) = offsemble_hsv(1);
                 saturation(offsemble_id) = offsemble_hsv(2);
 
-                if ~plot_ensemble
-                    brightness(ensemble_id) = 0;
+                if ~plot_onsemble
+                    brightness(onsemble_id) = 0;
                 end
 
                 if ~plot_offsemble
                     brightness(offsemble_id) = 0;
                 end
 
-                if ~plot_nonxsembles
-                    brightness(nonxsemble_id) = 0;
+                if ~plot_nonparticipant
+                    brightness(nonparticipant_id) = 0;
                 end
 
                 mask = Get_ROIs_Image(data.Neurons,data.Movie.Width,...
                     data.Movie.Height,brightness,hues,saturation);
 
                 % Get title
-                if plot_ensemble && plot_offsemble && plot_nonxsembles
-                    options_title = [' (ensemble, offsemble, and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                elseif plot_ensemble && plot_offsemble
-                    options_title = [' (ensemble and offsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                elseif plot_ensemble && plot_nonxsembles
-                    options_title = [' (ensemble and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                elseif plot_ensemble
-                    options_title = [' (ensemble ' app.HighlightEnsembleDropDown.Value ')'];
-                elseif plot_offsemble && plot_nonxsembles
-                    options_title = [' (offsemble and nonxsemble ' app.HighlightEnsembleDropDown.Value ')'];
+                if plot_onsemble && plot_offsemble && plot_nonparticipant
+                    options_title = [' (onsemble, offsemble, and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
+                elseif plot_onsemble && plot_offsemble
+                    options_title = [' (onsemble and offsemble ' app.HighlightEnsembleDropDown.Value ')'];
+                elseif plot_onsemble && plot_nonparticipant
+                    options_title = [' (onsemble and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
+                elseif plot_onsemble
+                    options_title = [' (onsemble ' app.HighlightEnsembleDropDown.Value ')'];
+                elseif plot_offsemble && plot_nonparticipant
+                    options_title = [' (offsemble and nonparticipant ' app.HighlightEnsembleDropDown.Value ')'];
                 elseif plot_offsemble
                     options_title = [' (offsemble ' app.HighlightEnsembleDropDown.Value ')'];
-                elseif plot_nonxsembles
-                    options_title = [' (nonxsemble neurons ' app.HighlightEnsembleDropDown.Value ')'];
+                elseif plot_nonparticipant
+                    options_title = [' (nonparticipant neurons ' app.HighlightEnsembleDropDown.Value ')'];
                 end
             end
             image = cast(rescale(mask)*double(intmax('uint8')),'uint8');
@@ -380,12 +380,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             n_neurons = length(data.Neurons);
             neuron_id = round(get(h_scrollbar,'value')*n_neurons-1)+1;
             Hold_Figure([data.Movie.DataName ' - Neuron signal'])
-            if app.SortVectorsCheckBox.Value
-                vector_id = data.Analysis.Ensembles.VectorID;
-            else
-                vector_id = [];
-            end
-            Plot_Neuron_Signal(data,neuron_id,vector_id)
+            Plot_Neuron_Signal(data,neuron_id,[])
         end
 
         function NeuronTestScroll_Callback(app,h_scrollbar)
@@ -558,13 +553,13 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             value = app.HighlightEnsembleDropDown.Value;
             switch value
                 case 'no'
-                    app.PlotEnsembleCheckBox.Enable = 'off';
+                    app.PlotOnsembleCheckBox.Enable = 'off';
                     app.PlotOffsembleCheckBox.Enable = 'off';
-                    app.PlotNonXsembleCheckBox.Enable = 'off';
+                    app.PlotNonparticipantCheckBox.Enable = 'off';
                 otherwise
-                    app.PlotEnsembleCheckBox.Enable = 'on';
+                    app.PlotOnsembleCheckBox.Enable = 'on';
                     app.PlotOffsembleCheckBox.Enable = 'on';
-                    app.PlotNonXsembleCheckBox.Enable = 'on';
+                    app.PlotNonparticipantCheckBox.Enable = 'on';
             end
         end
 
@@ -585,27 +580,27 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     [data.Movie.DataName ' - all neurons - point'])
             else
             
-                plot_ensemble = app.PlotEnsembleCheckBox.Value;
+                plot_onsemble = app.PlotOnsembleCheckBox.Value;
                 plot_offsemble = app.PlotOffsembleCheckBox.Value;
-                plot_nonxsembles = app.PlotNonXsembleCheckBox.Value;
+                plot_nonparticipant = app.PlotNonparticipantCheckBox.Value;
     
-                if ~plot_ensemble && ~plot_offsemble && ~plot_nonxsembles
+                if ~plot_onsemble && ~plot_offsemble && ~plot_nonparticipant
                     return
                 end
-    
+
                 % Selected ensemble neurons
                 ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
-                ensemble_id = data.Analysis.Ensembles.EnsembleNeurons{ensemble_number};
+                onsemble_id = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
                 offsemble_id = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
-                nonxsemble_id = setdiff(1:data.Analysis.Neurons,ensemble_id);
-                nonxsemble_id = setdiff(nonxsemble_id,offsemble_id);
+                nonparticipant_id = setdiff(1:data.Analysis.Neurons,onsemble_id);
+                nonparticipant_id = setdiff(nonparticipant_id,offsemble_id);
     
                 % Set spiral marker points
-                if plot_ensemble
-                    Write_XY_Prairie_Stim(data.XY.All(ensemble_id,:),true,'',...
-                        [data.Movie.DataName ' - ensemble ' num2str(ensemble_number) ' spiral'])
-                    Write_XY_Prairie_Stim(data.XY.All(ensemble_id,:),false,'',...
-                        [data.Movie.DataName ' - ensemble ' num2str(ensemble_number) ' point'])
+                if plot_onsemble
+                    Write_XY_Prairie_Stim(data.XY.All(onsemble_id,:),true,'',...
+                        [data.Movie.DataName ' - onsemble ' num2str(ensemble_number) ' spiral'])
+                    Write_XY_Prairie_Stim(data.XY.All(onsemble_id,:),false,'',...
+                        [data.Movie.DataName ' - onsemble ' num2str(ensemble_number) ' point'])
                 end
                 if plot_offsemble
                     Write_XY_Prairie_Stim(data.XY.All(offsemble_id,:),true,'',...
@@ -613,11 +608,11 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     Write_XY_Prairie_Stim(data.XY.All(offsemble_id,:),false,'',...
                         [data.Movie.DataName ' - offsemble ' num2str(ensemble_number) ' point'])
                 end
-                if plot_nonxsembles
-                    Write_XY_Prairie_Stim(data.XY.All(nonxsemble_id,:),true,'',...
-                        [data.Movie.DataName ' - nonxsemble ' num2str(ensemble_number) ' spiral'])
-                    Write_XY_Prairie_Stim(data.XY.All(nonxsemble_id,:),false,'',...
-                        [data.Movie.DataName ' - nonxsemble ' num2str(ensemble_number) ' point'])
+                if plot_nonparticipant
+                    Write_XY_Prairie_Stim(data.XY.All(nonparticipant_id,:),true,'',...
+                        [data.Movie.DataName ' - nonparticipant ' num2str(ensemble_number) ' spiral'])
+                    Write_XY_Prairie_Stim(data.XY.All(nonparticipant_id,:),false,'',...
+                        [data.Movie.DataName ' - nonparticipant ' num2str(ensemble_number) ' point'])
                 end
             end
         end
@@ -687,20 +682,20 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 assignin('base',...
                     ['all_neurons_' data.Movie.DataName],neurons)
             else
-                get_ensemble = app.PlotEnsembleCheckBox.Value;
+                get_onsemble = app.PlotOnsembleCheckBox.Value;
                 get_offsemble = app.PlotOffsembleCheckBox.Value;
-                get_nonxsembles = app.PlotNonXsembleCheckBox.Value;
+                get_nonparticipant = app.PlotNonparticipantCheckBox.Value;
     
                 ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
-                ensemble_id = data.Analysis.Ensembles.EnsembleNeurons{ensemble_number};
+                onsemble_id = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
                 offsemble_id = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
-                nonxsemble_id = setdiff(1:data.Analysis.Neurons,ensemble_id);
-                nonxsemble_id = setdiff(nonxsemble_id,offsemble_id);
+                nonparticipant_id = setdiff(1:data.Analysis.Neurons,onsemble_id);
+                nonparticipant_id = setdiff(nonparticipant_id,offsemble_id);
 
-                if get_ensemble
-                    neurons = data.Neurons(ensemble_id);
+                if get_onsemble
+                    neurons = data.Neurons(onsemble_id);
                     assignin('base',...
-                    ['neurons_ens_' num2str(ensemble_number) '_' data.Movie.DataName],neurons)
+                    ['neurons_on_' num2str(ensemble_number) '_' data.Movie.DataName],neurons)
                 end
 
                 if get_offsemble
@@ -709,8 +704,8 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     ['neurons_off_' num2str(ensemble_number) '_' data.Movie.DataName],neurons)
                 end
 
-                if get_nonxsembles
-                    neurons = data.Neurons(nonxsemble_id);
+                if get_nonparticipant
+                    neurons = data.Neurons(nonparticipant_id);
                     assignin('base',...
                     ['neurons_non_' num2str(ensemble_number) '_' data.Movie.DataName],neurons)
                 end
@@ -727,25 +722,25 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             if strcmp(app.HighlightEnsembleDropDown.Value,'no')
                 id = 1:length(data.Neurons);
             else
-                get_ensemble = app.PlotEnsembleCheckBox.Value;
+                get_onsemble = app.PlotOnsembleCheckBox.Value;
                 get_offsemble = app.PlotOffsembleCheckBox.Value;
-                get_nonxsembles = app.PlotNonXsembleCheckBox.Value;
+                get_nonparticipant = app.PlotNonparticipantCheckBox.Value;
     
                 ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
-                ensemble_id = data.Analysis.Ensembles.EnsembleNeurons{ensemble_number};
+                onsemble_id = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
                 offsemble_id = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
-                nonxsemble_id = setdiff(1:data.Analysis.Neurons,ensemble_id);
-                nonxsemble_id = setdiff(nonxsemble_id,offsemble_id);
+                nonparticipant = setdiff(1:data.Analysis.Neurons,onsemble_id);
+                nonparticipant = setdiff(nonparticipant,offsemble_id);
 
                 id = [];
-                if get_ensemble
-                    id = [id ensemble_id];
+                if get_onsemble
+                    id = [id onsemble_id];
                 end
                 if get_offsemble
                     id = [id offsemble_id];
                 end
-                if get_nonxsembles
-                    id = [id nonxsemble_id];
+                if get_nonparticipant
+                    id = [id nonparticipant];
                 end
             end
 
@@ -793,6 +788,8 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             replay_name = ['replay_' data.Movie.DataName];
             if evalin('base',['exist(''replay_' data.Movie.DataName ''',''var'')'])
                 app.Movie = evalin('base',replay_name);
+            else
+                app.Movie = [];
             end
 
             % If there is no movie
@@ -808,6 +805,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
 
                 % Save in file
                 Save_Tiff_Fast(app.Movie,[data.Movie.DataName ' - Replay.tiff'])
+                ReplayActivityButtonPushed(app,[])
             else
                 % Create figure
                 factor = data.Movie.Width/data.Movie.Height;
@@ -858,39 +856,39 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 axes(xsemble_axes);
                 hold(xsemble_axes,'on')
                 raster = data.Analysis.Raster;
-                xsemble_number = str2double(app.HighlightEnsembleDropDown.Value);
+                ensemble_number = str2double(app.HighlightEnsembleDropDown.Value);
 
                 plot_contrast_ratio = false;
-                if isnan(xsemble_number)
+                if isnan(ensemble_number)
                     plot(xsemble_axes,mean(raster,1),'k')
                     legend_text = 'entire population';
                 else
-                    ensemble_neurons = data.Analysis.Ensembles.EnsembleNeurons{xsemble_number};
-                    offsemble_neurons = data.Analysis.Ensembles.OffsembleNeurons{xsemble_number};
-                    nonxsemble_neurons = setdiff(1:data.Analysis.Neurons,ensemble_neurons);
-                    nonxsemble_neurons = setdiff(nonxsemble_neurons,offsemble_neurons);
+                    onsemble_neurons = data.Analysis.Ensembles.OnsembleNeurons{ensemble_number};
+                    offsemble_neurons = data.Analysis.Ensembles.OffsembleNeurons{ensemble_number};
+                    nonparticipant_neurons = setdiff(1:data.Analysis.Neurons,onsemble_neurons);
+                    nonparticipant_neurons = setdiff(nonparticipant_neurons,offsemble_neurons);
                     legend_text = {};
-                    if app.PlotEnsembleCheckBox.Value
+                    if app.PlotOnsembleCheckBox.Value
                         if app.PlotOffsembleCheckBox.Value
-                            ensemble_fraction = mean(raster(ensemble_neurons,:),1);
+                            onsemble_fraction = mean(raster(onsemble_neurons,:),1);
                             offsemble_fraction = mean(raster(offsemble_neurons,:),1);
-                            contrast_ratio = (ensemble_fraction+0.05)./(offsemble_fraction+0.05);
+                            contrast_ratio = (onsemble_fraction+0.05)./(offsemble_fraction+0.05);
                             plot(xsemble_axes,contrast_ratio/max(contrast_ratio),'color',[0.8 0 0.8])
-                            legend_text{end+1} = 'contrast ratio';
+                            legend_text{end+1} = 'ratio ONsemble/OFFsemble';
                             plot_contrast_ratio = true;
                         end
-                        plot(xsemble_axes,mean(raster(ensemble_neurons,:),1),'color',[1 0.7 0.7])
-                        legend_text{end+1} = 'ensemble neurons';
+                        plot(xsemble_axes,mean(raster(onsemble_neurons,:),1),'color',[1 0.7 0.7])
+                        legend_text{end+1} = 'onsemble neurons';
                     end
                     if app.PlotOffsembleCheckBox.Value
                         plot(xsemble_axes,mean(raster(offsemble_neurons,:),1),'color',[0.7 0.7 1])
                         legend_text{end+1} = 'offsemble neurons';
                     end
-                    if app.PlotNonXsembleCheckBox.Value
-                        plot(xsemble_axes,mean(raster(nonxsemble_neurons,:),1),'color',[0.7 0.7 0.7])
-                        legend_text{end+1} = 'nonsemble neurons';
+                    if app.PlotNonparticipantCheckBox.Value
+                        plot(xsemble_axes,mean(raster(nonparticipant_neurons,:),1),'color',[0.7 0.7 0.7])
+                        legend_text{end+1} = 'nonparticipant neurons';
                     end
-                    Plot_Area(data.Analysis.Ensembles.ActivityBinary(xsemble_number,:),...
+                    Plot_Area(data.Analysis.Ensembles.Activity(ensemble_number,:),...
                         0,[0.8 0 0.8],0.2)
                 end
                 set(xsemble_axes,'box','off','xtick',[],'ytick',0:0.5:1)
@@ -916,47 +914,52 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                 cla(external_axes); hold on
                 
                 % Plot voltage recording
-                voltage = data.VoltageRecording;
-                legend_text = {};
-                max_y = 15;
-                if isfield(voltage,'Locomotion')
-                    plot(external_axes,voltage.Locomotion,'k')
-                    xlim([0 length(voltage.Locomotion)])
-                    ylabel({'locomotion','[cm/s]'})
-                    legend_text = {'locomotion'};
-                end
-                if isfield(voltage,'Licking')
-                    axes(external_axes);
-                    Plot_Area(rescale(voltage.Licking,0,max_y),0,[0.8 0.8 0.8],0.5)
-                    xlim([0 length(voltage.Licking)])
-                    legend_text = [legend_text {'licking'}];
-                end
-                if isfield(voltage,'Laser')
-                    axes(external_axes);
-                    Plot_Area(rescale(voltage.Laser,0,max_y),0,[0.3 0.3 0.3],0.5)
-                    xlim([0 length(voltage.Laser)])
-                    legend_text = [legend_text {'laser'}];
-                end
-                if isfield(voltage,'Stimuli')
-                    axes(external_axes);
-                    if nnz(voltage.Stimuli)
-                        stimuli = voltage.Stimuli;
-                        if nnz(stimuli)
-                            stim_text = '→↗↑↖←↙↓↘';
-                            legends = Plot_Stimulation(stimuli,max_y,stim_text);
-                            legend_text = [legend_text legends];
+                if isfield(data,'VoltageRecording')
+                    voltage = data.VoltageRecording;
+                    legend_text = {};
+                    max_y = 15;
+                    if isfield(voltage,'Locomotion')
+                        plot(external_axes,voltage.Locomotion,'k')
+                        xlim([0 length(voltage.Locomotion)])
+                        ylabel({'locomotion','[cm/s]'})
+                        legend_text = {'locomotion'};
+                    end
+                    if isfield(voltage,'Licking')
+                        axes(external_axes);
+                        Plot_Area(rescale(voltage.Licking,0,max_y),0,[0.8 0.8 0.8],0.5)
+                        xlim([0 length(voltage.Licking)])
+                        legend_text = [legend_text {'licking'}];
+                    end
+                    if isfield(voltage,'Laser')
+                        axes(external_axes);
+                        Plot_Area(rescale(voltage.Laser,0,max_y),0,[0.3 0.3 0.3],0.5)
+                        xlim([0 length(voltage.Laser)])
+                        legend_text = [legend_text {'laser'}];
+                    end
+                    if isfield(voltage,'Stimuli')
+                        axes(external_axes);
+                        if nnz(voltage.Stimuli)
+                            stimuli = voltage.Stimuli;
+                            if nnz(stimuli)
+                                stim_text = '→↗↑↖←↙↓↘';
+                                legends = Plot_Stimulation(stimuli,max_y,stim_text);
+                                legend_text = [legend_text legends];
+                            end
                         end
                     end
+                    linkaxes([external_axes xsemble_axes current_axes],'x')
+                    Set_Label_Time(data.Analysis.Frames,data.Movie.FPS,0,h.external_axes)
+        
+                    ylim([0 max_y])
+                    ylabel({'running speed','(cm/s)'})
+                    box off
+                    l = legend(legend_text);
+                    l.Position(1)=0.91;
+                    l.Position(2)=0.05;
+                else
+                    linkaxes([xsemble_axes current_axes],'x')
+                    Set_Label_Time(data.Analysis.Frames,data.Movie.FPS,0,xsemble_axes)
                 end
-                linkaxes([external_axes xsemble_axes current_axes],'x')
-                Set_Label_Time(data.Analysis.Frames,data.Movie.FPS,0,h.external_axes)
-    
-                ylim([0 max_y])
-                ylabel({'running speed','(cm/s)'})
-                box off
-                l = legend(legend_text);
-                l.Position(1)=0.91;
-                l.Position(2)=0.05;
             end
         end
 
@@ -987,30 +990,13 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             pre = round(2*fps);
             post = round(2*fps);
 
-            if isfield(data.Analysis,'NonEnsembles')
-                if isfield(data.Analysis.NonEnsembles,'ActivationSequence')
-                    activation_sequence_ensembles = data.Analysis.Ensembles.ActivationSequence;
-                    activation_sequence_nonensembles = data.Analysis.NonEnsembles.ActivationSequence+...
-                        data.Analysis.Ensembles.Count;
-                    activation_sequence_nonensembles(data.Analysis.NonEnsembles.ActivationSequence==0) = 0;
-                    activation_sequence = activation_sequence_ensembles+activation_sequence_nonensembles;
-                    colors = Read_Colors(data.Analysis.Ensembles.Count+data.Analysis.NonEnsembles.Count);
-                    color_ensembles = Read_Colors(data.Analysis.Ensembles.Count);
-                    color_nonensembles = Attenuate_Colors(colors(data.Analysis.Ensembles.Count+1:end,:),2);
-                    colors = [color_ensembles; color_nonensembles];
-                else
-                    disp(['There is no activation sequence field.' ...
-                        ' Try to use Add_Data_Activation_Sequence.m.'])
-                    return
-                end
-            else
-                activation_sequence = data.Analysis.Ensembles.ActivationSequence;
-                colors = Read_Colors(data.Analysis.Ensembles.Count);
-            end
-    
+            activation_sequence = data.Analysis.Ensembles.ActivationSequence;
+            colors = Read_Colors(data.Analysis.Ensembles.Count);
+            
             if isfield(data.VoltageRecording,'Stimuli')
                 stimuli = data.VoltageRecording.Stimuli;
             end
+
             if isfield(data.VoltageRecording,'Laser')
                 laser = data.VoltageRecording.Laser>0;
             end
@@ -1115,7 +1101,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
     
                     Plot_Ensemble_Trials(activation_sequence,laser,pre,post,fps,colors)
                 otherwise
-                    if length(selection)==1
+                    if isscalar(selection)
                         % Single visual stimulation
                         % Get the type of visual stimulation
                         id = find('→↗↑↖←↙↓↘'==selection);
@@ -1163,8 +1149,6 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                         % correlation to neuron
                         neuron_corr = 1-pdist2(avg_trials,avg_raster,'correlation');
                         [~,sorting_id] = sort(neuron_corr,'descend');
-%                         id_corr = find(neuron_corr>0.2);
-%                         id_anti = find(neuron_corr<-0.2);
                         
                         % Plot stimulated neuron
                         Set_Figure([data.Movie.DataName ' - neuron ' num2str(i)...
@@ -1454,7 +1438,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
 
             % Create XsemblesAnalysisCheckBox
             app.XsemblesAnalysisCheckBox = uicheckbox(app.XsembleanalysisPanel);
-            app.XsemblesAnalysisCheckBox.Text = 'extract ensembles and offsembles';
+            app.XsemblesAnalysisCheckBox.Text = 'extract onsembles and offsembles';
             app.XsemblesAnalysisCheckBox.Position = [17 7 207 22];
             app.XsemblesAnalysisCheckBox.Value = true;
 
@@ -1504,26 +1488,26 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.XsemblesPanel.Title = 'Xsembles';
             app.XsemblesPanel.Position = [12 110 278 248];
 
-            % Create PlotEnsembleCheckBox
-            app.PlotEnsembleCheckBox = uicheckbox(app.XsemblesPanel);
-            app.PlotEnsembleCheckBox.Enable = 'off';
-            app.PlotEnsembleCheckBox.Text = 'ensemble';
-            app.PlotEnsembleCheckBox.Position = [10 171 74 22];
-            app.PlotEnsembleCheckBox.Value = true;
+            % Create PlotOnsembleCheckBox
+            app.PlotOnsembleCheckBox = uicheckbox(app.XsemblesPanel);
+            app.PlotOnsembleCheckBox.Enable = 'off';
+            app.PlotOnsembleCheckBox.Text = 'ensemble';
+            app.PlotOnsembleCheckBox.Position = [10 171 74 22];
+            app.PlotOnsembleCheckBox.Value = true;
 
             % Create PlotOffsembleCheckBox
             app.PlotOffsembleCheckBox = uicheckbox(app.XsemblesPanel);
             app.PlotOffsembleCheckBox.Enable = 'off';
             app.PlotOffsembleCheckBox.Text = 'offsemble';
-            app.PlotOffsembleCheckBox.Position = [96 171 75 22];
+            app.PlotOffsembleCheckBox.Position = [90 171 75 22];
             app.PlotOffsembleCheckBox.Value = true;
 
-            % Create PlotNonXsembleCheckBox
-            app.PlotNonXsembleCheckBox = uicheckbox(app.XsemblesPanel);
-            app.PlotNonXsembleCheckBox.Enable = 'off';
-            app.PlotNonXsembleCheckBox.Text = 'nonxsemble';
-            app.PlotNonXsembleCheckBox.Position = [183 171 87 22];
-            app.PlotNonXsembleCheckBox.Value = true;
+            % Create PlotNonparticipantCheckBox
+            app.PlotNonparticipantCheckBox = uicheckbox(app.XsemblesPanel);
+            app.PlotNonparticipantCheckBox.Enable = 'off';
+            app.PlotNonparticipantCheckBox.Text = 'nonparticipant';
+            app.PlotNonparticipantCheckBox.Position = [170 171 95 22];
+            app.PlotNonparticipantCheckBox.Value = true;
 
             % Create PlotSignalsButton
             app.PlotSignalsButton = uibutton(app.XsemblesPanel, 'push');
@@ -1543,14 +1527,14 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.GetNeuronsButton.ButtonPushedFcn = createCallbackFcn(app, @GetNeuronsButtonPushed, true);
             app.GetNeuronsButton.WordWrap = 'on';
             app.GetNeuronsButton.Position = [10 12 120 40];
-            app.GetNeuronsButton.Text = 'Get neurons in workspace';
+            app.GetNeuronsButton.Text = 'Export neurons to workspace';
 
             % Create GetStimulationFilesButton
             app.GetStimulationFilesButton = uibutton(app.XsemblesPanel, 'push');
             app.GetStimulationFilesButton.ButtonPushedFcn = createCallbackFcn(app, @GetStimulationFilesButtonPushed, true);
             app.GetStimulationFilesButton.WordWrap = 'on';
             app.GetStimulationFilesButton.Position = [150 12 120 40];
-            app.GetStimulationFilesButton.Text = 'Get prairie stimulation files';
+            app.GetStimulationFilesButton.Text = 'Export prairie stimulation files';
 
             % Create ShapeCheckBox
             app.ShapeCheckBox = uicheckbox(app.XsemblesPanel);
@@ -1575,7 +1559,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.HighlightensembleLabel = uilabel(app.XsemblesPanel);
             app.HighlightensembleLabel.HorizontalAlignment = 'right';
             app.HighlightensembleLabel.Position = [47 198 103 22];
-            app.HighlightensembleLabel.Text = 'highlight xsemble:';
+            app.HighlightensembleLabel.Text = 'select ensemble:';
 
             % Create HighlightEnsembleDropDown
             app.HighlightEnsembleDropDown = uidropdown(app.XsemblesPanel);

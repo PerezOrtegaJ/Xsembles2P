@@ -50,7 +50,7 @@ if isfield(data,'Optogenetics')
 end
 
 if isfield(data,'Analysis')
-    ensemble_activity = data.Analysis.Ensembles.ActivityBinary;
+    ensemble_activity = data.Analysis.Ensembles.Activity;
     n_ensembles = data.Analysis.Ensembles.Count;
 else
     ensemble_activity = [];
