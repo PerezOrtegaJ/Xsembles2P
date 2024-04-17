@@ -21,10 +21,8 @@ preferred-citation:
     given-names: "Rafael"
     orcid: "http://orcid.org/0000-0003-4206-497X"
   doi: "10.1038/s41467-024-47515-x"
-  journal: "Nature Communications"
+  journal: "Nat Commun"
   month: 4
-  start: 1 # First page number
-  end: 14 # Last page number
   title: "Stimulus encoding by specific inactivation of cortical neurons"
   issue: 3192
   volume: 15
