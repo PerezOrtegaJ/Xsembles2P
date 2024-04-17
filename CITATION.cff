@@ -1,9 +1,31 @@
-cff-version: 1.0.0
+cff-version: 1.1.0
 message: "If you use this software, please cite it as below."
 authors:
   - family-names: Jesús
     given-names: Pérez-Ortega
     orcid: https://orcid.org/0000-0001-8502-1692
 title: Xsembles2P
-version: v1.0.0
-date-released: 2023-03-23
+version: v1.1.0
+date-released: 2023-10-09
+
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Pérez-Ortega"
+    given-names: "Jesús"
+    orcid: "http://orcid.org/0000-0001-8502-1692"
+  - family-names: "Akrouh"
+    given-names: "Alejandro"
+    orcid: "http://orcid.org/0000-0002-3249-6771"
+  - family-names: "Yuste"
+    given-names: "Rafael"
+    orcid: "http://orcid.org/0000-0003-4206-497X"
+  doi: "10.1038/s41467-024-47515-x"
+  journal: "Nature Communications"
+  month: 4
+  start: 1 # First page number
+  end: 14 # Last page number
+  title: "Stimulus encoding by specific inactivation of cortical neurons"
+  issue: 3192
+  volume: 15
+  year: 2024
