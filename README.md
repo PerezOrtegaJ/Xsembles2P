@@ -19,7 +19,7 @@ The algorithm performs the following computations:
 <sup>††</sup> Unsupervised model-free algorithm which identifies statistically significant repeated activity patterns in population vectors where each pattern includes an onsemble (active neurons) and its associated offsemble (silenced neurons).
 
 ## Citation
-If you use **_Xsembles2P_**, please cite one of our papers [NatComms](https://www.nature.com/articles/s41467-024-47515-x) or [eLife](https://elifesciences.org/articles/64449):
+If you use **_Xsembles2P_**, please cite our papers [NatComms](https://www.nature.com/articles/s41467-024-47515-x) and/or [eLife](https://elifesciences.org/articles/64449):
 > Pérez-Ortega, J., Akrouh, A. & Yuste, R. Stimulus encoding by specific inactivation of cortical neurons. Nat Commun 15, 3192 (2024). doi: 10.1038/s41467-024-47515-x
 
 > Pérez-Ortega J, Alejandre-García T, Yuste R. 2021. Long-term stability of cortical ensembles. Elife 10:1–19. doi:10.7554/eLife.64449
