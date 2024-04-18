@@ -480,6 +480,10 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                     sort_neurons = false;
                 case 'ensemble sorting'
                     sort_neurons = true;
+                case 'ONsemble sorting'
+                    sort_neurons = Get_Neuron_ID(data,'on');
+                case 'OFFsemble sorting'
+                    sort_neurons = Get_Neuron_ID(data,'off');
                 otherwise
                     if strcmp(value(1:5),'EPI -')
                         epi_ensemble = str2num(value(end));
@@ -1290,6 +1294,8 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             workspace_strings = evalin('base','who')';
             data_strings = [{'no sorting of neurons'}...
                             {'ensemble sorting'}...
+                            {'ONsemble sorting'}...
+                            {'OFFsemble sorting'}...
                             data_strings...
                             workspace_strings];
             set(app.SortNeuronsDropDown,'items',data_strings)
