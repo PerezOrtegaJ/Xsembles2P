@@ -42,7 +42,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         GetNeuronsButton               matlab.ui.control.Button
         SelectSignalsDropDown          matlab.ui.control.DropDown
         PlotSignalsButton              matlab.ui.control.Button
-        PlotNonparticipantCheckBox         matlab.ui.control.CheckBox
+        PlotNonparticipantCheckBox     matlab.ui.control.CheckBox
         PlotOffsembleCheckBox          matlab.ui.control.CheckBox
         PlotOnsembleCheckBox           matlab.ui.control.CheckBox
         RasterPanel                    matlab.ui.container.Panel
@@ -51,6 +51,17 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
         PlotRasterButton               matlab.ui.control.Button
         SortVectorsCheckBox            matlab.ui.control.CheckBox
         SelectDataDropDown             matlab.ui.control.DropDown
+        HelpTab                        matlab.ui.container.Tab
+        ContactPanel                   matlab.ui.container.Panel
+        EmailLink                      matlab.ui.control.Hyperlink
+        EmailLink2                     matlab.ui.control.Hyperlink
+        EmailLabel                     matlab.ui.control.Label
+        KeepituptodatePanel            matlab.ui.container.Panel
+        GithubLink                     matlab.ui.control.Hyperlink
+        GithubLabel                    matlab.ui.control.Label
+        CitationPanel                  matlab.ui.container.Panel
+        DOILink                        matlab.ui.control.Hyperlink
+        CitationLabel                  matlab.ui.control.Label
     end
 
     
@@ -77,7 +88,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
                         app.SelectDataDropDown.BackgroundColor = [0.8 0.9 0.8];
                         app.SelectDataDropDown.Tooltip = 'Data compatible!';
                         
-                        % Check if data has xsemble analysis
+                        % Check if data has analysis field
                         if isfield(data,'Analysis') 
                             app.SortVectorsCheckBox.Enable = 'on';
                         else
@@ -1401,7 +1412,7 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.PSNRdBThSpinner.HorizontalAlignment = 'center';
             app.PSNRdBThSpinner.Enable = 'off';
             app.PSNRdBThSpinner.Position = [166 10 92 28];
-            app.PSNRdBThSpinner.Value = 20;
+            app.PSNRdBThSpinner.Value = 10;
 
             % Create SetThresholdVisuallyCheckBox
             app.SetThresholdVisuallyCheckBox = uicheckbox(app.SignalevaluationPanel);
@@ -1439,13 +1450,13 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
 
             % Create XsembleanalysisPanel
             app.XsembleanalysisPanel = uipanel(app.AnalyzeTab);
-            app.XsembleanalysisPanel.Title = 'Xsemble analysis';
+            app.XsembleanalysisPanel.Title = 'Ensemble analysis';
             app.XsembleanalysisPanel.Position = [11 31 271 57];
 
             % Create XsemblesAnalysisCheckBox
             app.XsemblesAnalysisCheckBox = uicheckbox(app.XsembleanalysisPanel);
-            app.XsemblesAnalysisCheckBox.Text = 'extract onsembles and offsembles';
-            app.XsemblesAnalysisCheckBox.Position = [17 7 207 22];
+            app.XsemblesAnalysisCheckBox.Text = 'Get ensembles (onsembles+offsembles)';
+            app.XsemblesAnalysisCheckBox.Position = [17 7 240 22];
             app.XsemblesAnalysisCheckBox.Value = true;
 
             % Create VisualizeTab
@@ -1610,6 +1621,74 @@ classdef Xsembles_2P_Viewer < matlab.apps.AppBase
             app.PlotStimLocationButton.ButtonPushedFcn = createCallbackFcn(app, @PlotStimLocationButtonPushed, true);
             app.PlotStimLocationButton.Position = [10 12 260 22];
             app.PlotStimLocationButton.Text = 'Plot location of stimulated neurons';
+
+            % Create CitationTab
+            app.HelpTab = uitab(app.TabGroup);
+            app.HelpTab.Title = 'Help';
+
+            % Create KeepituptodatePanel
+            app.KeepituptodatePanel = uipanel(app.HelpTab);
+            app.KeepituptodatePanel.Title = 'Keep it up to date:';
+            app.KeepituptodatePanel.Position = [12 372 278 113];
+
+            % Create GithubLabel
+            app.GithubLabel = uilabel(app.KeepituptodatePanel);
+            app.GithubLabel.WordWrap = 'on';
+            app.GithubLabel.FontAngle = 'italic';
+            app.GithubLabel.Position = [13 39 254 44];
+            app.GithubLabel.Text = 'Follow Xsembles2P on GitHub. Your input matters! Feel free to comment or suggest contributions to enhance this tool.';
+
+            % Create GithubLink
+            app.GithubLink = uihyperlink(app.KeepituptodatePanel);
+            app.GithubLink.HorizontalAlignment = 'center';
+            app.GithubLink.URL = 'https://github.com/PerezOrtegaJ/Xsembles2P';
+            app.GithubLink.Position = [16 8 243 23];
+            app.GithubLink.Text = 'github.com/PerezOrtegaJ/Xsembles2P';
+
+            % Create CitationPanel
+            app.CitationPanel = uipanel(app.HelpTab);
+            app.CitationPanel.Title = 'Please cite our paper:';
+            app.CitationPanel.Position = [12 254 278 109];
+
+            % Create CitationLabel
+            app.CitationLabel = uilabel(app.CitationPanel);
+            app.CitationLabel.WordWrap = 'on';
+            app.CitationLabel.FontAngle = 'italic';
+            app.CitationLabel.Position = [13 35 254 44];
+            app.CitationLabel.Text = 'Pérez-Ortega, J., Akrouh, A. & Yuste, R. 2024. Stimulus encoding by specific inactivation of cortical neurons. Nat Commun 15, 3192.';
+
+            % Create DOILink
+            app.DOILink = uihyperlink(app.CitationPanel);
+            app.DOILink.HorizontalAlignment = 'center';
+            app.DOILink.URL = 'https://doi.org/10.1038/s41467-024-47515-x';
+            app.DOILink.Position = [13 8 234 23];
+            app.DOILink.Text = 'doi: 10.1038/s41467-024-47515-x';
+
+             % Create ContactPanel
+            app.ContactPanel = uipanel(app.HelpTab);
+            app.ContactPanel.Title = 'Contact:';
+            app.ContactPanel.Position = [12 153 278 92];
+
+            % Create EmailLabel
+            app.EmailLabel = uilabel(app.ContactPanel);
+            app.EmailLabel.WordWrap = 'on';
+            app.EmailLabel.FontAngle = 'italic';
+            app.EmailLabel.Position = [13 40 43 22];
+            app.EmailLabel.Text = 'emails: ';
+
+            % Create EmailLink
+            app.EmailLink = uihyperlink(app.ContactPanel);
+            app.EmailLink.HorizontalAlignment = 'center';
+            app.EmailLink.URL = 'mailto: jesus.perez@columbia.edu';
+            app.EmailLink.Position = [55 40 211 23];
+            app.EmailLink.Text = 'jesus.perez@columbia.edu';
+
+            % Create EmailLink_2
+            app.EmailLink2 = uihyperlink(app.ContactPanel);
+            app.EmailLink2.HorizontalAlignment = 'center';
+            app.EmailLink2.URL = 'mailto: jesus.epo@gmail.com';
+            app.EmailLink2.Position = [55 15 211 23];
+            app.EmailLink2.Text = 'jesus.epo@gmail.com';
 
             % Show the figure after all components are created
             app.Xsembles2PViewerUIFigure.Visible = 'on';
