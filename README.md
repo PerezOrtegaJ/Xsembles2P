@@ -67,13 +67,13 @@ Xsembles_2P('','SamplingPeriod',0.1,'NeuronRadius',4)
 ```matlab
 Xsembles_2P_Viewer
 ```
-<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Analyze.png" width=50% height=50%>
+<img src="Images/Xsembles_2P_Viewer_Analyze.png" width=50% height=50%>
 
 2. Then, click on the button `...` to find and select the video that you want to analyze.
 3. Specify the parameters and click the button `Analyze video`.
 4. Once the video is analyzed, you can plot the raster with the ensembles clicking the button `Plot raster`.
 
-<img src="https://github.com/PerezOrtegaJ/Xsembles2P/blob/c6848f957569408555e8bc3b92a651cea46132ff/Images/Xsembles_2P_Viewer_Visualize.png" width=50% height=50%>
+<img src="Images/Xsembles_2P_Viewer_Visualize.png" width=50% height=50%>
 
 This is an example of an experiment with visual stimuli of drifting gratings in 8 different directions. Note that this algorithm is not using stimuli information to extact ensemble, stimuli information is optional to visualize and perform subsequent analysis.
 
